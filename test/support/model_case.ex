@@ -25,14 +25,6 @@ defmodule Trav.ModelCase do
     end
   end
 
-  setup tags do
-    unless tags[:async] do
-      Ecto.Adapters.SQL.restart_test_transaction(Trav.Repo, [])
-    end
-
-    :ok
-  end
-
   @doc """
   Helper for returning list of errors in model when passed certain data.
 

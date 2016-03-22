@@ -7,5 +7,7 @@ defmodule Trav.Router do
 
   scope "/api", Trav do
     pipe_through :api
+
+    resources "/users", UserController, except: [:new, :edit]
   end
 end
