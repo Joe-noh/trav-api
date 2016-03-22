@@ -32,7 +32,7 @@ defmodule Trav.Mixfile do
   defp deps do
     [{:phoenix, "~> 1.1.4"},
      {:postgrex, ">= 0.0.0"},
-     {:phoenix_ecto, "~> 2.0"},
+     {:phoenix_ecto, "~> 3.0.0-beta.2"},
      {:gettext, "~> 0.9"},
      {:cowboy, "~> 1.0"}]
   end
