@@ -1,23 +1,20 @@
 defmodule Trav.TripControllerTest do
   use Trav.ConnCase, async: true
 
-  alias Trav.{User, Trip}
-
-  @valid_attrs %{title: "福井旅行"}
-  @invalid_attrs %{title: ""}
+  alias Trav.{UserFactory, TripFactory}
+  alias Trav.Trip
 
   setup %{conn: conn} do
     Ecto.Adapters.SQL.Sandbox.checkout(Trav.Repo)
 
-    user = %User{}
-      |> User.changeset(%{name: "Joe_noh", access_token: "hogehoge"})
-      |> Repo.insert!
-    trip = %Trip{user_id: user.id}
-      |> Trip.changeset(@valid_attrs)
-      |> Repo.insert!
-      |> Repo.preload(:user)
+    user = UserFactory.create(:user)
+    trip = TripFactory.create(:trip, user: user)
 
-    {:ok, conn: put_req_header(conn, "accept", "application/json"), trip: trip}
+    {:ok, [
+      conn: put_req_header(conn, "accept", "application/json"),
+      trip: trip,
+      user: user
+    ]}
   end
 
   test "lists all entries on index", %{conn: conn} do
@@ -27,9 +24,11 @@ defmodule Trav.TripControllerTest do
 
   test "shows chosen resource", %{conn: conn, trip: trip} do
     conn = get conn, trip_path(conn, :show, trip)
-    assert json_response(conn, 200)["data"] == %{"id" => trip.id,
+    assert json_response(conn, 200)["data"] == %{
+      "id" => trip.id,
       "title" => trip.title,
-      "user_id" => trip.user_id}
+      "user_id" => trip.user_id
+    }
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do
@@ -38,27 +37,27 @@ defmodule Trav.TripControllerTest do
     end
   end
 
-  test "creates and renders resource when data is valid", %{conn: conn, trip: trip} do
-    conn = post conn, trip_path(conn, :create), trip: Map.put(@valid_attrs, :user_id, trip.user.id)
+  test "creates and renders resource when data is valid", %{conn: conn, user: user} do
+    conn = post conn, trip_path(conn, :create), trip: TripFactory.fields_for(:trip, user_id: user.id)
     assert json_response(conn, 201)["data"]["id"]
 
-    title = Map.get(@valid_attrs, :title)
+    title = TripFactory.fields_for(:trip) |> Map.get(:title)
     assert from(t in Trip, where: t.title == ^title) |> Ecto.Query.first |> Repo.one
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn, trip: trip} do
-    conn = post conn, trip_path(conn, :create), trip: Map.put(@invalid_attrs, :user_id, trip.user.id)
+  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
+    conn = post conn, trip_path(conn, :create), trip: TripFactory.fields_for(:invalid_trip)
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "updates and renders chosen resource when data is valid", %{conn: conn, trip: trip} do
-    conn = put conn, trip_path(conn, :update, trip), trip: Map.put(@valid_attrs, :user_id, trip.user.id)
+  test "updates and renders chosen resource when data is valid", %{conn: conn, trip: trip, user: user} do
+    conn = put conn, trip_path(conn, :update, trip), trip: TripFactory.fields_for(:trip, user_id: user.id)
+
     assert json_response(conn, 200)["data"]["id"]
-    assert Repo.get_by(Trip, @valid_attrs)
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, trip: trip} do
-    conn = put conn, trip_path(conn, :update, trip), trip: @invalid_attrs
+    conn = put conn, trip_path(conn, :update, trip), trip: TripFactory.fields_for(:invalid_trip)
     assert json_response(conn, 422)["errors"] != %{}
   end
 
