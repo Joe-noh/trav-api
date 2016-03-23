@@ -5,6 +5,7 @@
   "db_connection": {:hex, :db_connection, "0.2.4"},
   "decimal": {:hex, :decimal, "1.1.1"},
   "ecto": {:hex, :ecto, "2.0.0-beta.2"},
+  "ex_machina": {:hex, :ex_machina, "0.6.1"},
   "gettext": {:hex, :gettext, "0.10.0"},
   "joken": {:hex, :joken, "1.1.0"},
   "jose": {:hex, :jose, "1.7.3"},
