@@ -34,7 +34,9 @@ defmodule Trav.Mixfile do
      {:postgrex, ">= 0.0.0"},
      {:phoenix_ecto, "~> 3.0.0-beta.2"},
      {:gettext, "~> 0.9"},
-     {:cowboy, "~> 1.0"}]
+     {:cowboy, "~> 1.0"},
+
+     {:joken, "~> 1.1"}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.
