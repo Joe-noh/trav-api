@@ -9,5 +9,6 @@ defmodule Trav.Router do
     pipe_through :api
 
     resources "/users", UserController, except: [:new, :edit]
+    resources "/trips", TripController, except: [:new, :edit]
   end
 end

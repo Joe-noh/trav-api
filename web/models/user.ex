@@ -1,9 +1,13 @@
 defmodule Trav.User do
   use Trav.Web, :model
 
+  alias Trav.Trip
+
   schema "users" do
     field :name,         :string
     field :access_token, :string
+
+    has_many :trips, Trip
 
     timestamps
   end
