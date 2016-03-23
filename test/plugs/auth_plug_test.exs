@@ -1,7 +1,7 @@
 defmodule Trav.AuthPlugTest do
   use Trav.ConnCase, async: true
 
-  alias Trav.{Plugs.AuthPlug, User}
+  alias Trav.{Plugs.AuthPlug, User, JWT}
 
   @secret "hogehogefugafuga"
 
@@ -12,11 +12,7 @@ defmodule Trav.AuthPlugTest do
       |> User.changeset(%{name: "Joe_noh", access_token: "hogehoge"})
       |> Repo.insert!
 
-    token = %{user_id: user.id}
-      |> Joken.token
-      |> Joken.with_signer(Joken.hs256 @secret)
-      |> Joken.sign
-      |> Joken.get_compact
+    token = JWT.encode(%{user_id: user.id}, @secret)
 
     {:ok, token: token}
   end

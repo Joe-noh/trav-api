@@ -1,7 +1,7 @@
 defmodule Trav.Plugs.AuthPlug do
   import Plug.Conn
 
-  alias Trav.{User, Repo}
+  alias Trav.{User, Repo, JWT}
 
   def init(secret: secret), do: secret
 
@@ -13,9 +13,7 @@ defmodule Trav.Plugs.AuthPlug do
   end
 
   defp assign_user(conn, "Bearer " <> token, secret) do
-    token = Joken.token(token)
-      |> Joken.with_signer(Joken.hs256 secret)
-      |> Joken.verify
+    token = JWT.decode(token, secret)
 
     case token.error do
       nil ->
