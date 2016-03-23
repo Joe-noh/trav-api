@@ -46,7 +46,7 @@ defmodule Trav.UserController do
   end
 
   def delete(conn, %{"id" => id}) do
-    Repo.get!(User, id) |> Repo.delete!(user)
+    Repo.get!(User, id) |> Repo.delete!
 
     send_resp(conn, :no_content, "")
   end
