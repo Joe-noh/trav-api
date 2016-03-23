@@ -1,9 +1,8 @@
 defmodule Trav.UserControllerTest do
   use Trav.ConnCase, async: true
+  import Trav.UserFactory
 
   alias Trav.User
-  @valid_attrs %{name: "Joe_noh", access_token: String.duplicate("a", 100)}
-  @invalid_attrs %{name: "", access_token: ""}
 
   setup %{conn: conn} do
     Ecto.Adapters.SQL.Sandbox.checkout(Trav.Repo)
@@ -13,12 +12,14 @@ defmodule Trav.UserControllerTest do
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, user_path(conn, :index)
+
     assert json_response(conn, 200)["data"] == []
   end
 
   test "shows chosen resource", %{conn: conn} do
-    user = User.changeset(%User{}, @valid_attrs) |> Repo.insert!
+    user = create(:user)
     conn = get conn, user_path(conn, :show, user)
+
     assert json_response(conn, 200)["data"] == %{"id" => user.id, "name" => user.name}
   end
 
@@ -29,32 +30,35 @@ defmodule Trav.UserControllerTest do
   end
 
   test "creates and renders resource when data is valid", %{conn: conn} do
-    conn = post conn, user_path(conn, :create), user: @valid_attrs
+    conn = post conn, user_path(conn, :create), user: fields_for(:user)
+
     assert json_response(conn, 201)["data"]["id"]
-    assert Repo.get_by(User, @valid_attrs)
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-    conn = post conn, user_path(conn, :create), user: @invalid_attrs
+    conn = post conn, user_path(conn, :create), user: fields_for(:invalid_user)
+
     assert json_response(conn, 422)["errors"] != %{}
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn} do
-    user = User.changeset(%User{}, @valid_attrs) |> Repo.insert!
-    conn = put conn, user_path(conn, :update, user), user: @valid_attrs
+    user = create(:user)
+    conn = put conn, user_path(conn, :update, user), user: fields_for(:user)
+
     assert json_response(conn, 200)["data"]["id"]
-    assert Repo.get_by(User, @valid_attrs)
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
-    user = User.changeset(%User{}, @valid_attrs) |> Repo.insert!
-    conn = put conn, user_path(conn, :update, user), user: @invalid_attrs
+    user = create(:user)
+    conn = put conn, user_path(conn, :update, user), user: fields_for(:invalid_user)
+
     assert json_response(conn, 422)["errors"] != %{}
   end
 
   test "deletes chosen resource", %{conn: conn} do
-    user = User.changeset(%User{}, @valid_attrs) |> Repo.insert!
+    user = create(:user)
     conn = delete conn, user_path(conn, :delete, user)
+
     assert response(conn, 204)
     refute Repo.get(User, user.id)
   end
