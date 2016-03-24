@@ -1,7 +1,7 @@
-defmodule Trav.AuthPlugTest do
+defmodule Trav.AssignAuthPlugTest do
   use Trav.ConnCase, async: true
 
-  alias Trav.{Plugs.AuthPlug, User, JWT}
+  alias Trav.{Plugs.AssignAuthPlug, User, JWT}
 
   @secret "hogehogefugafuga"
 
@@ -20,7 +20,7 @@ defmodule Trav.AuthPlugTest do
   test "the user is assigned if the token is valid", %{token: token} do
     conn = conn
       |> put_req_header("authorization", "Bearer #{token}")
-      |> AuthPlug.call(@secret)
+      |> AssignAuthPlug.call(@secret)
 
     assert conn.assigns.current_user != nil
   end
@@ -28,7 +28,7 @@ defmodule Trav.AuthPlugTest do
   test "the user is not assigned if the token is invalid", %{token: token} do
     conn = conn
       |> put_req_header("authorization", "Bearer #{token}")
-      |> AuthPlug.call(@secret <> "aaa")
+      |> AssignAuthPlug.call(@secret <> "aaa")
 
     assert conn.assigns.current_user == nil
   end

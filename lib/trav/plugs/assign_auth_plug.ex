@@ -1,4 +1,4 @@
-defmodule Trav.Plugs.AuthPlug do
+defmodule Trav.Plugs.AssignAuthPlug do
   import Plug.Conn
 
   alias Trav.{User, Repo, JWT}
