@@ -1,25 +1,29 @@
 defmodule Trav.TripTest do
   use Trav.ModelCase
 
-  alias Trav.{User, Trip}
-
-  @valid_attrs %{title: "福井旅行"}
-  @invalid_attrs %{title: ""}
+  alias Trav.Trip
+  alias Trav.{UserFactory, TripFactory}
 
   setup do
     Ecto.Adapters.SQL.Sandbox.checkout(Trav.Repo)
 
-    user = User.changeset(%User{}, %{name: "Joe_noh", access_token: "hogehoge"}) |> Repo.insert!
-    {:ok, user: user}
+    user = UserFactory.create(:user)
+    trip = TripFactory.build(:trip, user_id: user.id)
+    {:ok, user: user, trip: trip}
   end
 
-  test "changeset with valid attributes", %{user: user} do
-    changeset = Trip.changeset(%Trip{user_id: user.id}, @valid_attrs)
+  test "changeset with valid attributes", %{trip: trip} do
+    changeset = Trip.changeset(trip, %{})
     assert changeset.valid?
   end
 
-  test "changeset with invalid attributes", %{user: user} do
-    changeset = Trip.changeset(%Trip{user_id: user.id}, @invalid_attrs)
+  test "title can't be blank", %{trip: trip} do
+    changeset = Trip.changeset(trip, %{title: ""})
+    refute changeset.valid?
+  end
+
+  test "user_id can't be blank", %{trip: trip} do
+    changeset = Trip.changeset(trip, %{user_id: nil})
     refute changeset.valid?
   end
 end
