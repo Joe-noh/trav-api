@@ -16,51 +16,65 @@ defmodule Trav.UserControllerTest do
   end
 
   test "lists all entries on index", %{conn: conn} do
-    conn = get conn, user_path(conn, :index)
+    response = conn
+      |> get(user_path(conn, :index))
+      |> json_response(200)
 
-    assert json_response(conn, 200)["data"] |> length > 0
+    assert response["data"] |> is_list
   end
 
   test "shows chosen resource", %{conn: conn, user: user} do
-    conn = get conn, user_path(conn, :show, user)
+    response = conn
+      |> get(user_path(conn, :show, user))
+      |> json_response(200)
 
-    assert json_response(conn, 200)["data"] == %{"id" => user.id, "name" => user.name}
+    assert response["data"] == %{"id" => user.id, "name" => user.name}
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do
     assert_error_sent 404, fn ->
-      get conn, user_path(conn, :show, -1)
+      get(conn, user_path(conn, :show, -1))
     end
   end
 
   test "creates and renders resource when data is valid", %{conn: conn} do
-    conn = post conn, user_path(conn, :create), user: UserFactory.fields_for(:user)
+    response = conn
+      |> post(user_path(conn, :create), user: UserFactory.fields_for(:user))
+      |> json_response(201)
 
-    assert json_response(conn, 201)["data"]["id"]
+    assert response["data"]["id"]
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-    conn = post conn, user_path(conn, :create), user: UserFactory.fields_for(:invalid_user)
+    response = conn
+      |> post(user_path(conn, :create), user: UserFactory.fields_for(:invalid_user))
+      |> json_response(422)
 
-    assert json_response(conn, 422)["errors"] != %{}
+    assert response["errors"] != %{}
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn, user: user} do
-    conn = put conn, user_path(conn, :update, user), user: UserFactory.fields_for(:user)
+    response = conn
+      |> put(user_path(conn, :update, user), user: UserFactory.fields_for(:user))
+      |> json_response(200)
 
-    assert json_response(conn, 200)["data"]["id"]
+    assert response["data"]["id"]
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
-    conn = put conn, user_path(conn, :update, user), user: UserFactory.fields_for(:invalid_user)
+    response = conn
+      |> put(user_path(conn, :update, user), user: UserFactory.fields_for(:invalid_user))
+      |> json_response(422)
 
-    assert json_response(conn, 422)["errors"] != %{}
+    assert response["errors"] != %{}
   end
 
   test "deletes chosen resource", %{conn: conn, user: user} do
-    conn = delete conn, user_path(conn, :delete, user)
+    response = conn
+      |> delete(user_path(conn, :delete, user))
+      |> response(204)
 
-    assert response(conn, 204)
+    assert response
     refute Repo.get(User, user.id)
   end
 end
