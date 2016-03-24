@@ -14,7 +14,7 @@ defmodule Trav.User do
 
   @allowed ~w(name access_token)
 
-  def changeset(model, params \\ :invalid) do
+  def changeset(model, params \\ %{}) do
     model
     |> cast(params, @allowed)
     |> validate_required(:name)

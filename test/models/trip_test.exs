@@ -13,7 +13,7 @@ defmodule Trav.TripTest do
   end
 
   test "changeset with valid attributes", %{trip: trip} do
-    changeset = Trip.changeset(trip, %{})
+    changeset = Trip.changeset(trip)
     assert changeset.valid?
   end
 

@@ -11,7 +11,7 @@ defmodule Trav.UserTest do
   end
 
   test "changeset with valid attributes is valid", %{user: user} do
-    changeset = User.changeset(user, %{})
+    changeset = User.changeset(user)
     assert changeset.valid?
   end
 
