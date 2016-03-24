@@ -3,6 +3,7 @@ defmodule Trav.UserController do
 
   alias Trav.User
 
+  plug Trav.Plugs.CheckAuthPlug when action != :create
   plug :scrub_params, "user" when action in [:create, :update]
 
   def index(conn, _params) do

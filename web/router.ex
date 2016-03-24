@@ -3,8 +3,7 @@ defmodule Trav.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug Trav.Plugs.AssignAuthPlug,
-      secret: Application.get_env(:trav, Trav.Endpoint) |> Keyword.get(:secret_key_base)
+    plug Trav.Plugs.AssignAuthPlug
   end
 
   scope "/api", Trav do

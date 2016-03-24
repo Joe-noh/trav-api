@@ -2,16 +2,19 @@ defmodule Trav.TripControllerTest do
   use Trav.ConnCase, async: true
 
   alias Trav.{UserFactory, TripFactory}
-  alias Trav.Trip
+  alias Trav.{Trip, JWT}
 
   setup %{conn: conn} do
     Ecto.Adapters.SQL.Sandbox.checkout(Trav.Repo)
 
     user = UserFactory.create(:user)
     trip = TripFactory.create(:trip, user: user)
+    conn = conn
+      |> put_req_header("accept", "application/json")
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: user.id}))
 
     {:ok, [
-      conn: put_req_header(conn, "accept", "application/json"),
+      conn: conn,
       trip: trip,
       user: user
     ]}

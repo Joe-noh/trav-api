@@ -3,6 +3,7 @@ defmodule Trav.TripController do
 
   alias Trav.Trip
 
+  plug Trav.Plugs.CheckAuthPlug
   plug :scrub_params, "trip" when action in [:create, :update]
 
   def index(conn, _params) do
