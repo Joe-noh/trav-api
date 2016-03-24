@@ -2,27 +2,26 @@ defmodule Trav.UserTest do
   use Trav.ModelCase
 
   alias Trav.User
+  alias Trav.UserFactory
 
-  @valid_attrs %{name: "Joe_noh", access_token: String.duplicate("a", 100)}
-  @invalid_attrs %{}
+  setup do
+    user = UserFactory.build(:user)
 
-  test "changeset with valid attributes is valid" do
-    changeset = User.changeset(%User{}, @valid_attrs)
+    {:ok, user: user}
+  end
+
+  test "changeset with valid attributes is valid", %{user: user} do
+    changeset = User.changeset(user, %{})
     assert changeset.valid?
   end
 
-  test "name can't be blank" do
-    changeset = User.changeset(%User{}, %{@valid_attrs | name: ""})
+  test "name can't be blank", %{user: user} do
+    changeset = User.changeset(user, %{name: ""})
     refute changeset.valid?
   end
 
-  test "access_token can't be blank" do
-    changeset = User.changeset(%User{}, %{@valid_attrs | access_token: ""})
-    refute changeset.valid?
-  end
-
-  test "changeset with invalid attributes is invalid" do
-    changeset = User.changeset(%User{}, @invalid_attrs)
+  test "access_token can't be blank", %{user: user} do
+    changeset = User.changeset(user, %{access_token: ""})
     refute changeset.valid?
   end
 end
