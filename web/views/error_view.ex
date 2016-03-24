@@ -1,6 +1,10 @@
 defmodule Trav.ErrorView do
   use Trav.Web, :view
 
+  def render("401.json", _assigns) do
+    %{errors: %{detail: "Unauthorized"}}
+  end
+
   def render("404.json", _assigns) do
     %{errors: %{detail: "Page not found"}}
   end

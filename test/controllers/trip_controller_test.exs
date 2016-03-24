@@ -40,6 +40,16 @@ defmodule Trav.TripControllerTest do
     }
   end
 
+  test "outsider can't see trips", %{conn: conn, trip: trip} do
+    another_user = UserFactory.create(:user)
+    response = conn
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: another_user.id}))
+      |> get(trip_path(conn, :show, trip))
+      |> json_response(401)
+
+    assert response["errors"] != %{}
+  end
+
   test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do
     assert_error_sent 404, fn ->
       get(conn, trip_path(conn, :show, -1))
@@ -81,6 +91,16 @@ defmodule Trav.TripControllerTest do
     assert response["errors"] != %{}
   end
 
+  test "outsider can't update trips", %{conn: conn, trip: trip} do
+    another_user = UserFactory.create(:user)
+    response = conn
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: another_user.id}))
+      |> put(trip_path(conn, :update, trip), trip: TripFactory.fields_for(:trip))
+      |> json_response(401)
+
+    assert response["errors"] != %{}
+  end
+
   test "deletes chosen resource", %{conn: conn, trip: trip} do
     response = conn
       |> delete(trip_path(conn, :delete, trip))
@@ -88,5 +108,15 @@ defmodule Trav.TripControllerTest do
 
     assert response
     refute Repo.get(Trip, trip.id)
+  end
+
+  test "outsider can't delete trips", %{conn: conn, trip: trip} do
+    another_user = UserFactory.create(:user)
+    response = conn
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: another_user.id}))
+      |> delete(trip_path(conn, :delete, trip))
+      |> json_response(401)
+
+    assert response["errors"] != %{}
   end
 end

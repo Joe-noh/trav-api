@@ -5,6 +5,7 @@ defmodule Trav.TripController do
 
   plug Trav.Plugs.CheckAuthPlug
   plug :scrub_params, "trip" when action in [:create, :update]
+  plug :correct_user when action in [:show, :update, :delete]
 
   def index(conn, _params) do
     trips = Repo.all(Trip)
@@ -28,8 +29,10 @@ defmodule Trav.TripController do
   end
 
   def show(conn, %{"id" => id}) do
-    trip = Repo.get!(Trip, id)
-    render(conn, "show.json", trip: trip)
+    case Repo.get(Trip, id) do
+      nil  -> conn |> put_status(404) |> render(Trav.ErrorView, "404.json")
+      trip -> render(conn, "show.json", trip: trip)
+    end
   end
 
   def update(conn, %{"id" => id, "trip" => trip_params}) do
@@ -54,5 +57,16 @@ defmodule Trav.TripController do
     Repo.delete!(trip)
 
     send_resp(conn, :no_content, "")
+  end
+
+  defp correct_user(conn, _opts) do
+    trip_id = conn.params |> Map.get("id") |> String.to_integer
+    trip = Repo.one!(from t in Trip, where: t.id == ^trip_id, preload: :user)
+
+    if trip.user.id == conn.assigns.current_user.id do
+      conn
+    else
+      conn |> put_status(401) |> render(Trav.ErrorView, "401.json") |> halt
+    end
   end
 end
