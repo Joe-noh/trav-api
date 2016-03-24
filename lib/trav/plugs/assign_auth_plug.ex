@@ -3,17 +3,17 @@ defmodule Trav.Plugs.AssignAuthPlug do
 
   alias Trav.{User, Repo, JWT}
 
-  def init(secret: secret), do: secret
+  def init(_opts), do: []
 
-  def call(conn, secret) do
+  def call(conn, _opts) do
     case get_req_header(conn, "authorization") do
-      [token] -> assign_user(conn, token, secret)
+      [token] -> assign_user(conn, token)
       _other  -> assign(conn, :current_user, nil)
     end
   end
 
-  defp assign_user(conn, "Bearer " <> token, secret) do
-    token = JWT.decode(token, secret)
+  defp assign_user(conn, "Bearer " <> token) do
+    token = JWT.decode(token)
 
     case token.error do
       nil ->
