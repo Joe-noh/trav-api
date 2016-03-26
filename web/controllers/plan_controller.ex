@@ -4,13 +4,8 @@ defmodule Trav.PlanController do
   alias Trav.Plan
 
   plug Trav.Plugs.CheckAuthPlug
-  plug :scrub_params, "plan" when action in [:update]
-  plug :correct_user when action in [:show, :update, :delete]
-
-  def show(conn, %{"trip_id" => trip_id, "id" => id}) do
-    plan = Repo.one!(from p in Plan, where: p.id == ^id and p.trip_id == ^trip_id)
-    render(conn, "show.json", plan: plan)
-  end
+  plug :scrub_params, "plan"
+  plug :correct_user
 
   def update(conn, %{"trip_id" => trip_id, "id" => id, "plan" => plan_params}) do
     plan = Repo.one!(from p in Plan, where: p.id == ^id and p.trip_id == ^trip_id)
@@ -24,12 +19,6 @@ defmodule Trav.PlanController do
         |> put_status(:unprocessable_entity)
         |> render(Trav.ChangesetView, "error.json", changeset: changeset)
     end
-  end
-
-  def delete(conn, %{"trip_id" => trip_id, "id" => id}) do
-    Repo.one!(from p in Plan, where: p.id == ^id and p.trip_id == ^trip_id) |> Repo.delete!
-
-    send_resp(conn, :no_content, "")
   end
 
   defp correct_user(conn, _opts) do

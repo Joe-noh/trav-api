@@ -25,6 +25,6 @@ defmodule Trav.PlanFactory do
   end
 
   def factory(:invalid_plan) do
-    %Plan{body: "", trip: nil}
+    %Plan{body: 3, trip: nil}
   end
 end
