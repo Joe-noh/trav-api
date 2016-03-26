@@ -11,7 +11,7 @@ defmodule Trav.Router do
 
     resources "/users", UserController, except: [:new, :edit, :index]
     resources "/trips", TripController, except: [:new, :edit] do
-      resources "/plans", PlanController, except: [:new, :edit, :index]
+      resources "/plans", PlanController, except: [:new, :edit, :index, :create]
     end
   end
 end
