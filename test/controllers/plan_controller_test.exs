@@ -12,7 +12,7 @@ defmodule Trav.PlanControllerTest do
     plan = PlanFactory.create(:plan, trip: trip)
     conn = conn
       |> put_req_header("accept", "application/json")
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: user.id}))
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(user))
 
     {:ok, [conn: conn, trip: trip, plan: plan]}
   end

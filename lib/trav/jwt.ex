@@ -8,6 +8,10 @@ defmodule Trav.JWT do
     |> verify
   end
 
+  def encode(%Trav.User{id: user_id}) do
+    encode(%{user_id: user_id})
+  end
+
   def encode(params) do
     params
     |> token

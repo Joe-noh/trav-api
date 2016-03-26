@@ -11,7 +11,7 @@ defmodule Trav.TripControllerTest do
     trip = TripFactory.create(:trip, user: user)
     conn = conn
       |> put_req_header("accept", "application/json")
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: user.id}))
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(user))
 
     {:ok, [
       conn: conn,
@@ -43,7 +43,7 @@ defmodule Trav.TripControllerTest do
   test "outsider can't see trips", %{conn: conn, trip: trip} do
     another_user = UserFactory.create(:user)
     response = conn
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: another_user.id}))
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(another_user))
       |> get(trip_path(conn, :show, trip))
       |> json_response(401)
 
@@ -96,7 +96,7 @@ defmodule Trav.TripControllerTest do
   test "outsider can't update trips", %{conn: conn, trip: trip} do
     another_user = UserFactory.create(:user)
     response = conn
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: another_user.id}))
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(another_user))
       |> put(trip_path(conn, :update, trip), trip: TripFactory.fields_for(:trip))
       |> json_response(401)
 
@@ -115,7 +115,7 @@ defmodule Trav.TripControllerTest do
   test "outsider can't delete trips", %{conn: conn, trip: trip} do
     another_user = UserFactory.create(:user)
     response = conn
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: another_user.id}))
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(another_user))
       |> delete(trip_path(conn, :delete, trip))
       |> json_response(401)
 
