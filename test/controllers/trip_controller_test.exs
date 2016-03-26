@@ -33,11 +33,9 @@ defmodule Trav.TripControllerTest do
       |> get(trip_path(conn, :show, trip))
       |> json_response(200)
 
-    assert response["data"] == %{
-      "id" => trip.id,
-      "title" => trip.title,
-      "user_id" => trip.user_id
-    }
+    assert response["data"]["id"]
+    assert response["data"]["title"]
+    assert response["data"]["plan"]
   end
 
   test "outsider can't see trips", %{conn: conn, trip: trip} do
@@ -58,15 +56,20 @@ defmodule Trav.TripControllerTest do
     assert response["errors"] != %{}
   end
 
-  test "creates and renders resource when data is valid", %{conn: conn, user: user} do
+  test "POST a trip", %{conn: conn} do
+    title = "沖縄旅行"
+    params = TripFactory.fields_for(:trip, title: title)
     response = conn
-      |> post(trip_path(conn, :create), trip: TripFactory.fields_for(:trip, user_id: user.id))
+      |> post(trip_path(conn, :create), trip: params)
       |> json_response(201)
 
     assert response["data"]["id"]
+    assert response["data"]["plan"]
 
-    title = TripFactory.fields_for(:trip) |> Map.get(:title)
-    assert from(t in Trip, where: t.title == ^title) |> Ecto.Query.first |> Repo.one
+    trip = (from t in Trip, where: t.title == ^title, preload: :plan) |> Repo.one
+
+    assert trip
+    assert trip.plan
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

@@ -8,30 +8,30 @@ defmodule Trav.TripController do
   plug :correct_user when action in [:show, :update, :delete]
 
   def index(conn, _params) do
-    trips = Repo.all(Trip)
+    trips = Repo.all(from t in Trip, preload: :plan)
     render(conn, "index.json", trips: trips)
   end
 
   def create(conn, %{"trip" => trip_params}) do
-    changeset = Trip.changeset(%Trip{}, trip_params)
+    multi = Trip.build_multi(conn.assigns.current_user, trip_params)
 
-    case Repo.insert(changeset) do
-      {:ok, trip} ->
+    case Repo.transaction(multi) do
+      {:ok, %{trip: trip}} ->
         conn
         |> put_status(:created)
         |> put_resp_header("location", trip_path(conn, :show, trip))
-        |> render("show.json", trip: trip)
-      {:error, changeset} ->
+        |> render("show.json", trip: Repo.preload(trip, :plan))
+      {:error, _, failed_changeset, _} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Trav.ChangesetView, "error.json", changeset: changeset)
+        |> render(Trav.ChangesetView, "error.json", changeset: failed_changeset)
     end
   end
 
   def show(conn, %{"id" => id}) do
     case Repo.get(Trip, id) do
       nil  -> not_found(conn)
-      trip -> render(conn, "show.json", trip: trip)
+      trip -> render(conn, "show.json", trip: Repo.preload(trip, :plan))
     end
   end
 
@@ -41,7 +41,7 @@ defmodule Trav.TripController do
 
     case Repo.update(changeset) do
       {:ok, trip} ->
-        render(conn, "show.json", trip: trip)
+        render(conn, "show.json", trip: Repo.preload(trip, :plan))
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)

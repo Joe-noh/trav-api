@@ -1,7 +1,6 @@
 defmodule Trav.PlanFactory do
   use ExMachina.Ecto, repo: Trav.Repo
 
-  alias Trav.TripFactory
   alias Trav.Plan
 
   def factory(:plan) do
@@ -19,12 +18,11 @@ defmodule Trav.PlanFactory do
       ### 旅館
 
       ごろごろしてうたたね
-      """,
-      trip: TripFactory.build(:trip)
+      """
     }
   end
 
   def factory(:invalid_plan) do
-    %Plan{body: 3, trip: nil}
+    %Plan{body: 3}
   end
 end
