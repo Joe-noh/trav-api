@@ -5,6 +5,7 @@ defmodule Trav.UserController do
 
   plug Trav.Plugs.CheckAuthPlug when action != :create
   plug :scrub_params, "user" when action in [:create, :update]
+  plug :correct_user when action in [:show, :update, :delete]
 
   def create(conn, %{"user" => user_params}) do
     changeset = User.changeset(%User{}, user_params)
@@ -45,5 +46,14 @@ defmodule Trav.UserController do
     Repo.get!(User, id) |> Repo.delete!
 
     send_resp(conn, :no_content, "")
+  end
+
+  defp correct_user(conn, _opts) do
+    user_id = conn.params |> Map.get("id") |> String.to_integer
+
+    case conn.assigns.current_user.id do
+      ^user_id -> conn
+      _ -> conn |> put_status(401) |> render(Trav.ErrorView, "401.json") |> halt
+    end
   end
 end

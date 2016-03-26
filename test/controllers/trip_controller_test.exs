@@ -50,10 +50,12 @@ defmodule Trav.TripControllerTest do
     assert response["errors"] != %{}
   end
 
-  test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do
-    assert_error_sent 404, fn ->
-      get(conn, trip_path(conn, :show, -1))
-    end
+  test "return 401 if the trip does not exist", %{conn: conn} do
+    response = conn
+      |> get(trip_path(conn, :show, -1))
+      |> json_response(401)
+
+    assert response["errors"] != %{}
   end
 
   test "creates and renders resource when data is valid", %{conn: conn, user: user} do

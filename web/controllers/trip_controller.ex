@@ -61,8 +61,15 @@ defmodule Trav.TripController do
 
   defp correct_user(conn, _opts) do
     trip_id = conn.params |> Map.get("id") |> String.to_integer
-    trip = Repo.one!(from t in Trip, where: t.id == ^trip_id, preload: :user)
+    trip = Repo.one(from t in Trip, where: t.id == ^trip_id, preload: :user)
 
+    case trip do
+      nil  -> conn |> put_status(401) |> render(Trav.ErrorView, "401.json") |> halt
+      trip -> do_correct_user(conn, trip)
+    end
+  end
+
+  defp do_correct_user(conn, trip) do
     if trip.user.id == conn.assigns.current_user.id do
       conn
     else

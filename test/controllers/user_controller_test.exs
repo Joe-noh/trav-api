@@ -23,10 +23,22 @@ defmodule Trav.UserControllerTest do
     assert response["data"] == %{"id" => user.id, "name" => user.name}
   end
 
-  test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do
-    assert_error_sent 404, fn ->
-      get(conn, user_path(conn, :show, -1))
-    end
+  test "a user can see only him/herself", %{conn: conn, user: user} do
+    another_user = UserFactory.create(:user)
+    response = conn
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: another_user.id}))
+      |> get(user_path(conn, :show, user))
+      |> json_response(401)
+
+    assert response["errors"] != %{}
+  end
+
+  test "return 401 if the user does not exist", %{conn: conn} do
+    response = conn
+      |> get(user_path(conn, :show, -1))
+      |> json_response(401)
+
+    assert response["errors"] != %{}
   end
 
   test "creates and renders resource when data is valid", %{conn: conn} do
