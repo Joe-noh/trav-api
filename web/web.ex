@@ -34,6 +34,7 @@ defmodule Trav.Web do
       import Ecto
       import Ecto.Query, only: [from: 1, from: 2]
 
+      import Trav.ErrorResponseHelpers
       import Trav.Router.Helpers
       import Trav.Gettext
     end
