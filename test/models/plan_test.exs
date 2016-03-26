@@ -1,12 +1,9 @@
 defmodule Trav.PlanTest do
   use Trav.ModelCase
 
-  alias Trav.Plan
-  alias Trav.{TripFactory, PlanFactory}
+  alias Trav.{Plan, PlanFactory}
 
   setup do
-    Ecto.Adapters.SQL.Sandbox.checkout(Trav.Repo)
-
     plan = PlanFactory.build(:plan)
 
     {:ok, plan: plan}

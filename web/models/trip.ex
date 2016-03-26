@@ -10,7 +10,7 @@ defmodule Trav.Trip do
     timestamps
   end
 
-  @allowed ~w(title user_id)
+  @allowed ~w(title)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -22,6 +22,6 @@ defmodule Trav.Trip do
     model
     |> cast(params, @allowed)
     |> validate_required(:title)
-    |> validate_required(:user_id)
+    |> assoc_constraint(:user)
   end
 end

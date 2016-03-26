@@ -14,6 +14,6 @@ defmodule Trav.Plan do
     model
     |> cast(params, @allowed)
     |> validate_required(:body)
-    |> validate_required(:trip)
+    |> assoc_constraint(:trip)
   end
 end

@@ -1,8 +1,7 @@
 defmodule Trav.UserTest do
   use Trav.ModelCase
 
-  alias Trav.User
-  alias Trav.UserFactory
+  alias Trav.{User, UserFactory}
 
   setup do
     user = UserFactory.build(:user)
