@@ -53,7 +53,7 @@ defmodule Trav.UserController do
 
     case conn.assigns.current_user.id do
       ^user_id -> conn
-      _ -> conn |> put_status(401) |> render(Trav.ErrorView, "401.json") |> halt
+      _other   -> unauthorized(conn)
     end
   end
 end

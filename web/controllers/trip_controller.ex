@@ -30,7 +30,7 @@ defmodule Trav.TripController do
 
   def show(conn, %{"id" => id}) do
     case Repo.get(Trip, id) do
-      nil  -> conn |> put_status(404) |> render(Trav.ErrorView, "404.json")
+      nil  -> not_found(conn)
       trip -> render(conn, "show.json", trip: trip)
     end
   end
@@ -64,7 +64,7 @@ defmodule Trav.TripController do
     trip = Repo.one(from t in Trip, where: t.id == ^trip_id, preload: :user)
 
     case trip do
-      nil  -> conn |> put_status(401) |> render(Trav.ErrorView, "401.json") |> halt
+      nil  -> unauthorized(conn)
       trip -> do_correct_user(conn, trip)
     end
   end
@@ -73,7 +73,7 @@ defmodule Trav.TripController do
     if trip.user.id == conn.assigns.current_user.id do
       conn
     else
-      conn |> put_status(401) |> render(Trav.ErrorView, "401.json") |> halt
+      unauthorized(conn)
     end
   end
 end
