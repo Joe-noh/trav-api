@@ -2,7 +2,7 @@ defmodule Trav.Plan do
   use Trav.Web, :model
 
   schema "plans" do
-    field :body, :string
+    field :body, :string, default: ""
     belongs_to :trip, Trav.Trip
 
     timestamps
@@ -13,7 +13,6 @@ defmodule Trav.Plan do
   def changeset(model, params \\ %{}) do
     model
     |> cast(params, @allowed)
-    |> validate_required(:body)
     |> assoc_constraint(:trip)
   end
 end

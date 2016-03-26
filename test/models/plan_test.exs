@@ -1,9 +1,11 @@
 defmodule Trav.PlanTest do
   use Trav.ModelCase
 
-  alias Trav.{Plan, PlanFactory}
+  alias Trav.{Plan, PlanFactory, TripFactory}
 
   setup do
+    Ecto.Adapters.SQL.Sandbox.checkout(Trav.Repo)
+
     plan = PlanFactory.build(:plan)
 
     {:ok, plan: plan}
@@ -14,8 +16,9 @@ defmodule Trav.PlanTest do
     assert changeset.valid?
   end
 
-  test "body can't be blank", %{plan: plan} do
-    changeset = Plan.changeset(plan, %{body: ""})
-    refute changeset.valid?
+  test "default body is empty string" do
+    plan = TripFactory.create(:trip) |> build_assoc(:plan) |> Repo.insert!
+
+    assert plan.body == ""
   end
 end
