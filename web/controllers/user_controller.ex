@@ -3,12 +3,9 @@ defmodule Trav.UserController do
 
   alias Trav.User
 
+  plug Trav.Plugs.CheckAuthPlug when action != :create
   plug :scrub_params, "user" when action in [:create, :update]
-
-  def index(conn, _params) do
-    users = Repo.all(User)
-    render(conn, "index.json", users: users)
-  end
+  plug :correct_user when action in [:show, :update, :delete]
 
   def create(conn, %{"user" => user_params}) do
     changeset = User.changeset(%User{}, user_params)
@@ -49,5 +46,14 @@ defmodule Trav.UserController do
     Repo.get!(User, id) |> Repo.delete!
 
     send_resp(conn, :no_content, "")
+  end
+
+  defp correct_user(conn, _opts) do
+    user_id = conn.params |> Map.get("id") |> String.to_integer
+
+    case conn.assigns.current_user.id do
+      ^user_id -> conn
+      _other   -> unauthorized(conn)
+    end
   end
 end

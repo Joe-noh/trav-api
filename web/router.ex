@@ -3,11 +3,13 @@ defmodule Trav.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Trav.Plugs.AssignAuthPlug
   end
 
   scope "/api", Trav do
     pipe_through :api
 
-    resources "/users", UserController, except: [:new, :edit]
+    resources "/users", UserController, except: [:new, :edit, :index]
+    resources "/trips", TripController, except: [:new, :edit]
   end
 end
