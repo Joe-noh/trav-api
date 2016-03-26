@@ -15,14 +15,6 @@ defmodule Trav.UserControllerTest do
     {:ok, conn: conn, user: user}
   end
 
-  test "lists all entries on index", %{conn: conn} do
-    response = conn
-      |> get(user_path(conn, :index))
-      |> json_response(200)
-
-    assert response["data"] |> is_list
-  end
-
   test "shows chosen resource", %{conn: conn, user: user} do
     response = conn
       |> get(user_path(conn, :show, user))
