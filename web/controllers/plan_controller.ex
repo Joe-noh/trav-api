@@ -7,13 +7,13 @@ defmodule Trav.PlanController do
   plug :scrub_params, "plan" when action in [:update]
   plug :correct_user when action in [:show, :update, :delete]
 
-  def show(conn, %{"id" => id}) do
-    plan = Repo.get!(Plan, id)
+  def show(conn, %{"trip_id" => trip_id, "id" => id}) do
+    plan = Repo.one!(from p in Plan, where: p.id == ^id and p.trip_id == ^trip_id)
     render(conn, "show.json", plan: plan)
   end
 
-  def update(conn, %{"id" => id, "plan" => plan_params}) do
-    plan = Repo.get!(Plan, id)
+  def update(conn, %{"trip_id" => trip_id, "id" => id, "plan" => plan_params}) do
+    plan = Repo.one!(from p in Plan, where: p.id == ^id and p.trip_id == ^trip_id)
     changeset = Plan.changeset(plan, plan_params)
 
     case Repo.update(changeset) do
@@ -26,8 +26,8 @@ defmodule Trav.PlanController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    Plan |> Repo.get!(id) |> Repo.delete!
+  def delete(conn, %{"trip_id" => trip_id, "id" => id}) do
+    Repo.one!(from p in Plan, where: p.id == ^id and p.trip_id == ^trip_id) |> Repo.delete!
 
     send_resp(conn, :no_content, "")
   end
