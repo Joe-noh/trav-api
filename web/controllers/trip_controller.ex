@@ -8,7 +8,7 @@ defmodule Trav.TripController do
   plug :correct_user when action in [:show, :update, :delete]
 
   def index(conn, _params) do
-    trips = Repo.all(from t in Trip, preload: :plan)
+    trips = Repo.all(from t in Trip, preload: [:plan, :map])
     render(conn, "index.json", trips: trips)
   end
 
@@ -20,7 +20,7 @@ defmodule Trav.TripController do
         conn
         |> put_status(:created)
         |> put_resp_header("location", trip_path(conn, :show, trip))
-        |> render("show.json", trip: Repo.preload(trip, :plan))
+        |> render("show.json", trip: preload_assoc(trip))
       {:error, _, failed_changeset, _} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -31,7 +31,7 @@ defmodule Trav.TripController do
   def show(conn, %{"id" => id}) do
     case Repo.get(Trip, id) do
       nil  -> not_found(conn)
-      trip -> render(conn, "show.json", trip: Repo.preload(trip, :plan))
+      trip -> render(conn, "show.json", trip: preload_assoc(trip))
     end
   end
 
@@ -41,7 +41,7 @@ defmodule Trav.TripController do
 
     case Repo.update(changeset) do
       {:ok, trip} ->
-        render(conn, "show.json", trip: Repo.preload(trip, :plan))
+        render(conn, "show.json", trip: preload_assoc(trip))
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -75,5 +75,9 @@ defmodule Trav.TripController do
     else
       unauthorized(conn)
     end
+  end
+
+  defp preload_assoc(trip) do
+    Repo.preload(trip, [:plan, :map])
   end
 end

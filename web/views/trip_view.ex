@@ -14,7 +14,8 @@ defmodule Trav.TripView do
       id: trip.id,
       title: trip.title,
       user_id: trip.user_id,
-      plan: render_one(trip.plan, Trav.PlanView, "plan.json")
+      plan: render_one(trip.plan, Trav.PlanView, "plan.json"),
+      map: render_one(trip.map, Trav.MapView, "map.json")
     }
   end
 end
