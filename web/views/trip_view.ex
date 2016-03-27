@@ -10,8 +10,11 @@ defmodule Trav.TripView do
   end
 
   def render("trip.json", %{trip: trip}) do
-    %{id: trip.id,
+    %{
+      id: trip.id,
       title: trip.title,
-      user_id: trip.user_id}
+      user_id: trip.user_id,
+      plan: render_one(trip.plan, Trav.PlanView, "plan.json")
+    }
   end
 end

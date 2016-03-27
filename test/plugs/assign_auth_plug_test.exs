@@ -10,7 +10,7 @@ defmodule Trav.AssignAuthPlugTest do
       |> User.changeset(%{name: "Joe_noh", access_token: "hogehoge"})
       |> Repo.insert!
 
-    token = JWT.encode(%{user_id: user.id})
+    token = JWT.encode(user)
 
     {:ok, token: token}
   end

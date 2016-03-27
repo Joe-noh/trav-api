@@ -10,7 +10,7 @@ defmodule Trav.UserControllerTest do
     user = UserFactory.create(:user)
     conn = conn
       |> put_req_header("accept", "application/json")
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: user.id}))
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(user))
 
     {:ok, conn: conn, user: user}
   end
@@ -26,7 +26,7 @@ defmodule Trav.UserControllerTest do
   test "a user can see only him/herself", %{conn: conn, user: user} do
     another_user = UserFactory.create(:user)
     response = conn
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(%{user_id: another_user.id}))
+      |> put_req_header("authorization", "Bearer " <> JWT.encode(another_user))
       |> get(user_path(conn, :show, user))
       |> json_response(401)
 

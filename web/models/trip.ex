@@ -1,27 +1,33 @@
 defmodule Trav.Trip do
   use Trav.Web, :model
 
-  alias Trav.User
+  alias Trav.{User, Trip, Plan}
 
   schema "trips" do
     field :title, :string
+
     belongs_to :user, User
+    has_one :plan, Plan, on_delete: :delete_all
 
     timestamps
   end
 
-  @allowed ~w(title user_id)
+  @allowed ~w(title)
 
-  @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
-  """
   def changeset(model, params \\ %{}) do
     model
     |> cast(params, @allowed)
     |> validate_required(:title)
-    |> validate_required(:user_id)
+    |> assoc_constraint(:user)
+  end
+
+  def build_multi(user, params) do
+    trip = user
+      |> build_assoc(:trips)
+      |> Trip.changeset(params)
+      |> put_assoc(:plan, %Plan{body: ""})
+
+    Ecto.Multi.new
+    |> Ecto.Multi.insert(:trip, trip)
   end
 end

@@ -1,13 +1,14 @@
 defmodule Trav.TripFactory do
   use ExMachina.Ecto, repo: Trav.Repo
 
-  alias Trav.UserFactory
+  alias Trav.{UserFactory, PlanFactory}
   alias Trav.Trip
 
   def factory(:trip) do
     %Trip{
       title: "旅行",
-      user: UserFactory.build(:user)
+      user: UserFactory.build(:user),
+      plan: PlanFactory.build(:plan)
     }
   end
 
