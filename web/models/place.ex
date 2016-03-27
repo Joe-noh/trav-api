@@ -10,17 +10,15 @@ defmodule Trav.Place do
     timestamps
   end
 
-  @required_fields ~w(name latitude longitude)
-  @optional_fields ~w()
+  @allowed ~w(name latitude longitude)
 
-  @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
-  """
-  def changeset(model, params \\ :empty) do
+  def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @allowed)
+    |> validate_required(:name)
+    |> validate_required(:latitude)
+    |> validate_required(:longitude)
+    |> validate_required(:map_id)
+    |> assoc_constraint(:map)
   end
 end

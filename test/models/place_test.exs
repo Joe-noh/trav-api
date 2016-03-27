@@ -2,17 +2,34 @@ defmodule Trav.PlaceTest do
   use Trav.ModelCase
 
   alias Trav.Place
+  alias Trav.{PlaceFactory, MapFactory}
 
-  @valid_attrs %{latitude: "120.5", longitude: "120.5", name: "some content"}
-  @invalid_attrs %{}
+  setup do
+    Ecto.Adapters.SQL.Sandbox.checkout(Repo)
 
-  test "changeset with valid attributes" do
-    changeset = Place.changeset(%Place{}, @valid_attrs)
+    map = MapFactory.create(:map)
+    place = PlaceFactory.build(:place, map_id: map.id)
+
+    {:ok, %{place: place}}
+  end
+
+  test "changeset with valid attributes", %{place: place} do
+    changeset = Place.changeset(place)
     assert changeset.valid?
   end
 
-  test "changeset with invalid attributes" do
-    changeset = Place.changeset(%Place{}, @invalid_attrs)
+  test "name can't be blank", %{place: place} do
+    changeset = Place.changeset(place, %{name: " "})
+    refute changeset.valid?
+  end
+
+  test "latitude can't be blank", %{place: place} do
+    changeset = Place.changeset(place, %{latitude: nil})
+    refute changeset.valid?
+  end
+
+  test "longitude can't be blank", %{place: place} do
+    changeset = Place.changeset(place, %{longitude: nil})
     refute changeset.valid?
   end
 end
