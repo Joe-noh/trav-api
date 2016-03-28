@@ -15,13 +15,19 @@ defmodule Trav.PlaceControllerTest do
   end
 
   test "lists all entries on index", %{conn: conn, trip: trip} do
-    conn = get conn, trip_place_path(conn, :index, trip)
-    assert json_response(conn, 200)["data"] |> is_list
+    response = conn
+      |> get(trip_place_path(conn, :index, trip))
+      |> json_response(200)
+
+    assert response["data"] |> is_list
   end
 
   test "shows chosen resource", %{conn: conn, trip: trip, place: place} do
-    conn = get conn, trip_place_path(conn, :show, trip, place)
-    assert json_response(conn, 200)["data"] == %{"id" => place.id,
+    response = conn
+      |> get(trip_place_path(conn, :show, trip, place))
+      |> json_response(200)
+
+    assert response["data"] == %{"id" => place.id,
       "map_id" => place.map_id,
       "name" => place.name,
       "latitude" => to_string(place.latitude),
@@ -32,34 +38,47 @@ defmodule Trav.PlaceControllerTest do
   test "creates and renders resource when data is valid", %{conn: conn, trip: trip} do
     name = "首里城"
     params = PlaceFactory.fields_for(:place, name: name)
-    conn = post(conn, trip_place_path(conn, :create, trip), place: params)
+    response = conn
+      |> post(trip_place_path(conn, :create, trip), place: params)
+      |> json_response(201)
 
-    assert json_response(conn, 201)["data"]["id"]
+    assert response["data"]["id"]
     assert Repo.get_by(Place, name: name)
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn, trip: trip} do
-    conn = post conn, trip_place_path(conn, :create, trip), place: PlaceFactory.fields_for(:invalid_place)
-    assert json_response(conn, 422)["errors"] != %{}
+    response = conn
+      |> post(trip_place_path(conn, :create, trip), place: PlaceFactory.fields_for(:invalid_place))
+      |> json_response(422)
+
+    assert response["errors"] != %{}
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn, trip: trip, place: place} do
     name = "首里城"
     params = PlaceFactory.fields_for(:place, name: name)
-    conn = put conn, trip_place_path(conn, :update, trip, place), place: params
+    response = conn
+      |> put(trip_place_path(conn, :update, trip, place), place: params)
+      |> json_response(200)
 
-    assert json_response(conn, 200)["data"]["id"]
+    assert response["data"]["id"]
     assert Repo.get_by(Place, name: name)
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, trip: trip, place: place} do
-    conn = put conn, trip_place_path(conn, :update, trip, place), place: PlaceFactory.fields_for(:invalid_place)
-    assert json_response(conn, 422)["errors"] != %{}
+    response = conn
+      |> put(trip_place_path(conn, :update, trip, place), place: PlaceFactory.fields_for(:invalid_place))
+      |> json_response(422)
+
+    assert response["errors"] != %{}
   end
 
   test "deletes chosen resource", %{conn: conn, trip: trip, place: place} do
-    conn = delete conn, trip_place_path(conn, :delete, trip, place)
-    assert response(conn, 204)
+    response = conn
+      |> delete(trip_place_path(conn, :delete, trip, place))
+      |> response(204)
+
+    assert response
     refute Repo.get(Place, place.id)
   end
 end
