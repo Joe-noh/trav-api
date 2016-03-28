@@ -1,7 +1,7 @@
 defmodule Trav.PlaceController do
   use Trav.Web, :controller
 
-  alias Trav.Place
+  alias Trav.{Place, Trip}
 
   plug :scrub_params, "place" when action in [:create, :update]
 
@@ -10,14 +10,17 @@ defmodule Trav.PlaceController do
     render(conn, "index.json", places: places)
   end
 
-  def create(conn, %{"place" => place_params}) do
-    changeset = Place.changeset(%Place{}, place_params)
+  def create(conn, %{"trip_id" => trip_id, "place" => place_params}) do
+    trip = Repo.one!(from t in Trip, where: t.id == ^trip_id, preload: :map)
+    changeset = trip.map
+      |> build_assoc(:places)
+      |> Place.changeset(place_params)
 
     case Repo.insert(changeset) do
       {:ok, place} ->
         conn
         |> put_status(:created)
-        |> put_resp_header("location", trip_place_path(conn, :show, place))
+        |> put_resp_header("location", trip_place_path(conn, :show, trip, place))
         |> render("show.json", place: place)
       {:error, changeset} ->
         conn

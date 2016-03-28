@@ -6,8 +6,8 @@ defmodule Trav.PlaceFactory do
   def factory(:place) do
     %Place{
       name: "恐竜博物館",
-      latitude: 36.082696,
-      longitude: 136.506553
+      latitude: Decimal.new(36.082696),
+      longitude: Decimal.new(136.506553)
     }
   end
 
