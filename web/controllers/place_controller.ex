@@ -3,7 +3,9 @@ defmodule Trav.PlaceController do
 
   alias Trav.{Place, Trip}
 
+  plug Trav.Plugs.CheckAuthPlug
   plug :scrub_params, "place" when action in [:create, :update]
+  plug :correct_user
 
   def index(conn, _params) do
     places = Repo.all(Place)
@@ -49,12 +51,19 @@ defmodule Trav.PlaceController do
   end
 
   def delete(conn, %{"id" => id}) do
-    place = Repo.get!(Place, id)
-
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
-    Repo.delete!(place)
+    Place |> Repo.get!(id) |> Repo.delete!
 
     send_resp(conn, :no_content, "")
+  end
+
+  defp correct_user(conn, _opts) do
+    trip_id = conn.params |> Map.get("trip_id") |> String.to_integer
+    trip = Repo.one(from t in Trip, where: t.id == ^trip_id, preload: :user)
+
+    if conn.assigns.current_user.id == trip.user.id do
+      conn
+    else
+      conn |> unauthorized
+    end
   end
 end
