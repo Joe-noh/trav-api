@@ -12,7 +12,7 @@ defmodule Trav.PlaceControllerTest do
     place = PlaceFactory.create(:place, map: trip.map)
     conn = conn
       |> put_req_header("accept", "application/json")
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(user))
+      |> put_req_header("authorization", user |> JWT.encode |> JWT.bearer)
 
     {:ok, %{conn: conn, trip: trip, place: place}}
   end
@@ -28,7 +28,7 @@ defmodule Trav.PlaceControllerTest do
   test "not granted user can't GET all places", %{conn: conn, trip: trip} do
     another_user = UserFactory.create(:user)
     response = conn
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(another_user))
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
       |> get(trip_place_path(conn, :index, trip))
       |> json_response(401)
 
@@ -52,7 +52,7 @@ defmodule Trav.PlaceControllerTest do
   test "not granted user can't GET a place", %{conn: conn, trip: trip, place: place} do
     another_user = UserFactory.create(:user)
     response = conn
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(another_user))
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
       |> get(trip_place_path(conn, :show, trip, place))
       |> json_response(401)
 
@@ -83,7 +83,7 @@ defmodule Trav.PlaceControllerTest do
     another_user = UserFactory.create(:user)
     params = PlaceFactory.fields_for(:place)
     response = conn
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(another_user))
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
       |> post(trip_place_path(conn, :create, trip), place: params)
       |> json_response(401)
 
@@ -114,7 +114,7 @@ defmodule Trav.PlaceControllerTest do
     another_user = UserFactory.create(:user)
     params = PlaceFactory.fields_for(:place)
     response = conn
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(another_user))
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
       |> put(trip_place_path(conn, :update, trip, place), place: params)
       |> json_response(401)
 
@@ -133,7 +133,7 @@ defmodule Trav.PlaceControllerTest do
   test "not granted user can't DELETE a place", %{conn: conn, trip: trip, place: place} do
     another_user = UserFactory.create(:user)
     response = conn
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(another_user))
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
       |> delete(trip_place_path(conn, :delete, trip, place))
       |> json_response(401)
 

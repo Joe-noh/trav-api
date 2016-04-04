@@ -1,6 +1,10 @@
 defmodule Trav.JWT do
   import Joken
 
+  def decode("Bearer " <> jwt) do
+    decode(jwt)
+  end
+
   def decode(jwt) do
     jwt
     |> token
@@ -19,6 +23,9 @@ defmodule Trav.JWT do
     |> sign
     |> get_compact
   end
+
+  def bearer(token = ("Bearer " <> _)), do: token
+  def bearer(token), do: "Bearer " <> token
 
   defp signer do
     Application.get_env(:trav, Trav.Endpoint)
