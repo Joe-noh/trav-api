@@ -3,6 +3,7 @@ defmodule Trav.Map do
 
   schema "maps" do
     belongs_to :trip, Trav.Trip
+    has_many :places, Trav.Place, on_delete: :delete_all
 
     timestamps
   end

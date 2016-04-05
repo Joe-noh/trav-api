@@ -12,7 +12,7 @@ defmodule Trav.Plugs.AssignAuthPlug do
     end
   end
 
-  defp assign_user(conn, "Bearer " <> token) do
+  defp assign_user(conn, token) do
     token = JWT.decode(token)
 
     case token.error do

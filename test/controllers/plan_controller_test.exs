@@ -12,7 +12,7 @@ defmodule Trav.PlanControllerTest do
     plan = PlanFactory.create(:plan, trip: trip)
     conn = conn
       |> put_req_header("accept", "application/json")
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(user))
+      |> put_req_header("authorization", user |> JWT.encode |> JWT.bearer)
 
     {:ok, [conn: conn, trip: trip, plan: plan]}
   end
@@ -36,7 +36,7 @@ defmodule Trav.PlanControllerTest do
   test "user cannot PUT others' plan", %{conn: conn, trip: trip, plan: plan} do
     another_user = UserFactory.create(:user)
     response = conn
-      |> put_req_header("authorization", "Bearer " <> JWT.encode(another_user))
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
       |> put(trip_plan_path(conn, :update, trip, plan), plan: PlanFactory.fields_for(:plan))
       |> json_response(401)
 
