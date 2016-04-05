@@ -2,13 +2,14 @@ defmodule Trav.TripControllerTest do
   use Trav.ConnCase, async: true
 
   alias Trav.{UserFactory, TripFactory}
-  alias Trav.{Trip, JWT}
+  alias Trav.{User, Trip, JWT}
 
   setup %{conn: conn} do
     Ecto.Adapters.SQL.Sandbox.checkout(Trav.Repo)
 
     user = UserFactory.create(:user)
     trip = TripFactory.create(:trip, user: user)
+      |> Repo.preload(:collaborators)
     conn = conn
       |> put_req_header("accept", "application/json")
       |> put_req_header("authorization", user |> JWT.encode |> JWT.bearer)
@@ -20,7 +21,7 @@ defmodule Trav.TripControllerTest do
     ]}
   end
 
-  test "lists all entries on index", %{conn: conn} do
+  test "GET all trips", %{conn: conn} do
     response = conn
       |> get(trip_path(conn, :index))
       |> json_response(200)
@@ -28,7 +29,7 @@ defmodule Trav.TripControllerTest do
     assert response["data"] |> length == 1
   end
 
-  test "shows chosen resource", %{conn: conn, trip: trip} do
+  test "GET a trip", %{conn: conn, trip: trip} do
     response = conn
       |> get(trip_path(conn, :show, trip))
       |> json_response(200)
@@ -46,6 +47,17 @@ defmodule Trav.TripControllerTest do
       |> json_response(401)
 
     assert response["errors"] != %{}
+
+    trip = Trip.changeset(trip)
+      |> put_assoc(:collaborators, [another_user | trip.collaborators])
+      |> Repo.update!
+
+    response = conn
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
+      |> get(trip_path(conn, :show, trip))
+      |> json_response(200)
+
+    assert response["data"]["id"]
   end
 
   test "return 401 if the trip does not exist", %{conn: conn} do
@@ -72,7 +84,7 @@ defmodule Trav.TripControllerTest do
     assert trip.plan
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
+  test "POST invalid trip", %{conn: conn} do
     response = conn
       |> post(trip_path(conn, :create), trip: TripFactory.fields_for(:invalid_trip))
       |> json_response(422)
@@ -80,7 +92,7 @@ defmodule Trav.TripControllerTest do
     assert response["errors"] != %{}
   end
 
-  test "updates and renders chosen resource when data is valid", %{conn: conn, trip: trip, user: user} do
+  test "PUT a trip", %{conn: conn, trip: trip, user: user} do
     response = conn
       |> put(trip_path(conn, :update, trip), trip: TripFactory.fields_for(:trip, user_id: user.id))
       |> json_response(200)
@@ -88,7 +100,7 @@ defmodule Trav.TripControllerTest do
     assert response["data"]["id"]
   end
 
-  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, trip: trip} do
+  test "PUT invalid trip", %{conn: conn, trip: trip} do
     response = conn
       |> put(trip_path(conn, :update, trip), trip: TripFactory.fields_for(:invalid_trip))
       |> json_response(422)
@@ -104,9 +116,20 @@ defmodule Trav.TripControllerTest do
       |> json_response(401)
 
     assert response["errors"] != %{}
+
+    trip = Trip.changeset(trip)
+      |> put_assoc(:collaborators, [another_user | trip.collaborators])
+      |> Repo.update!
+
+    response = conn
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
+      |> put(trip_path(conn, :update, trip), trip: TripFactory.fields_for(:trip))
+      |> json_response(200)
+
+    assert response["data"]["id"]
   end
 
-  test "deletes chosen resource", %{conn: conn, trip: trip} do
+  test "DELETE a trip", %{conn: conn, trip: trip} do
     response = conn
       |> delete(trip_path(conn, :delete, trip))
       |> response(204)
@@ -123,5 +146,17 @@ defmodule Trav.TripControllerTest do
       |> json_response(401)
 
     assert response["errors"] != %{}
+
+    trip = Trip.changeset(trip)
+      |> put_assoc(:collaborators, [another_user | trip.collaborators])
+      |> Repo.update!
+
+    response = conn
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
+      |> delete(trip_path(conn, :delete, trip))
+      |> response(204)
+
+    assert response
+    assert Repo.get!(User, another_user.id)
   end
 end

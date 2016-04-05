@@ -50,18 +50,14 @@ defmodule Trav.TripController do
   end
 
   def delete(conn, %{"id" => id}) do
-    trip = Repo.get!(Trip, id)
-
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
-    Repo.delete!(trip)
+    Trip |> Repo.get!(id) |> Repo.delete!
 
     send_resp(conn, :no_content, "")
   end
 
   defp correct_user(conn, _opts) do
     trip_id = conn.params |> Map.get("id") |> String.to_integer
-    trip = Repo.one(from t in Trip, where: t.id == ^trip_id, preload: :user)
+    trip = Repo.one(from t in Trip, where: t.id == ^trip_id, preload: [:user, :collaborators])
 
     case trip do
       nil  -> unauthorized(conn)
@@ -70,7 +66,8 @@ defmodule Trav.TripController do
   end
 
   defp do_correct_user(conn, trip) do
-    if trip.user.id == conn.assigns.current_user.id do
+    correct_user_ids = [trip.user.id | Enum.map(trip.collaborators, &(&1.id))]
+    if conn.assigns.current_user.id in correct_user_ids do
       conn
     else
       unauthorized(conn)

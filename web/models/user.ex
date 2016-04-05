@@ -8,6 +8,7 @@ defmodule Trav.User do
     field :access_token, :string
 
     has_many :trips, Trip
+    many_to_many :collaborated_trips, Trip, join_through: "collaborators"
 
     timestamps
   end
