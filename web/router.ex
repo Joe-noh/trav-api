@@ -13,6 +13,7 @@ defmodule Trav.Router do
     resources "/trips", TripController, except: [:new, :edit] do
       resources "/plans", PlanController, only: [:update]
       resources "/places", PlaceController, except: [:new, :edit]
+      resources "/collaborator", CollaboratorController, only: [:create]
     end
   end
 end

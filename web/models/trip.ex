@@ -33,4 +33,11 @@ defmodule Trav.Trip do
 
     Multi.new |> Multi.insert(:trip, trip)
   end
+
+  def add_collaborator(trip, user) do
+    trip = changeset(trip)
+      |> put_assoc(:collaborators, [user | trip.collaborators])
+
+    Multi.new |> Multi.update(:trip, trip)
+  end
 end
