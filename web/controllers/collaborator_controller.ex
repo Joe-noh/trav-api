@@ -12,7 +12,7 @@ defmodule Trav.CollaboratorController do
     multi = Trip.add_collaborator(trip, user)
 
     case Repo.transaction(multi) do
-      {:ok, %{trip: trip}} ->
+      {:ok, _} ->
         conn
         |> put_status(:created)
         |> render(Trav.UserView, "show.json", user: user)

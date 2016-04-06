@@ -28,4 +28,14 @@ defmodule Trav.CollaboratorControllerTest do
 
     assert response["data"]
   end
+
+  test "POST twice doesn't change num of collaborators", %{conn: conn, trip: trip} do
+    another_user = UserFactory.create(:user)
+
+    conn |> post(trip_collaborator_path(conn, :create, trip), collaborator_id: another_user.id)
+    assert trip |> Repo.preload(:collaborators) |> Map.get(:collaborators) |> length == 1
+
+    conn |> post(trip_collaborator_path(conn, :create, trip), collaborator_id: another_user.id)
+    assert trip |> Repo.preload(:collaborators) |> Map.get(:collaborators) |> length == 1
+  end
 end
