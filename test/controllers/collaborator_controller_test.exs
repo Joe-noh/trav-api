@@ -60,6 +60,17 @@ defmodule Trav.CollaboratorControllerTest do
     assert Repo.one(from u in User, select: count(u.id)) == num_users
   end
 
+  test "deleting an not-collaborator-user from collaborators returns 204", %{conn: conn, trip: trip} do
+    another_user = UserFactory.create(:user)
+    num_collaborators = collaborators(trip) |> length
+
+    conn
+    |> delete(trip_collaborator_path(conn, :delete, trip, another_user))
+    |> response(204)
+
+    assert trip |> collaborators |> length == num_collaborators
+  end
+
   defp collaborators(trip) do
     Repo.get(Trip, trip.id) |> Repo.preload(:collaborators) |> Map.get(:collaborators)
   end
