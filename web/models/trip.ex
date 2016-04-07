@@ -10,7 +10,9 @@ defmodule Trav.Trip do
     belongs_to :user, User
     has_one :plan, Plan, on_delete: :delete_all
     has_one :map,  Map,  on_delete: :delete_all
-    many_to_many :collaborators, User, join_through: "collaborators", on_delete: :delete_all
+    many_to_many :collaborators, User, join_through: "collaborators",
+      on_delete: :delete_all,
+      on_replace: :delete
 
     timestamps
   end
@@ -36,6 +38,14 @@ defmodule Trav.Trip do
 
   def add_collaborator(trip, user) do
     collaborators = Enum.map([user | trip.collaborators], &Ecto.Changeset.change/1)
+    trip = changeset(trip) |> put_assoc(:collaborators, collaborators)
+
+    Multi.new |> Multi.update(:trip, trip)
+  end
+
+  def del_collaborator(trip, user) do
+    collaborators = trip.collaborators
+      |> Enum.filter_map(fn c -> c.id != user.id end, &Ecto.Changeset.change/1)
     trip = changeset(trip) |> put_assoc(:collaborators, collaborators)
 
     Multi.new |> Multi.update(:trip, trip)
