@@ -9,6 +9,6 @@ defmodule Trav.Repo.Migrations.AddCollaborationsTable do
       timestamps
     end
 
-    create index(:collaborations, [:trip_id, :user_id])
+    create unique_index(:collaborations, [:trip_id, :user_id])
   end
 end
