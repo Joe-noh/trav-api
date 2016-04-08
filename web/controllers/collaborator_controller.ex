@@ -1,9 +1,11 @@
 defmodule Trav.CollaboratorController do
   use Trav.Web, :controller
 
-  alias Trav.{User, Collaboration}
+  alias Trav.{User, Trip, Collaboration}
 
+  plug Trav.Plugs.CheckAuthPlug
   plug :scrub_params, "collaborator_id" when action in [:create]
+  plug :correct_user
 
   def create(conn, %{"trip_id" => trip_id, "collaborator_id" => collaborator_id}) do
     changeset = %Collaboration{trip_id: String.to_integer(trip_id), user_id: collaborator_id}
@@ -32,5 +34,16 @@ defmodule Trav.CollaboratorController do
     if collaboration, do: Repo.delete!(collaboration)
 
     conn |> send_resp(:no_content, "")
+  end
+
+  defp correct_user(conn, _opts) do
+    trip_id = conn.params |> Map.get("trip_id") |> String.to_integer
+    trip = Repo.get!(Trip, trip_id)
+
+    if conn.assigns.current_user.id == trip.user_id do
+      conn
+    else
+      conn |> unauthorized
+    end
   end
 end

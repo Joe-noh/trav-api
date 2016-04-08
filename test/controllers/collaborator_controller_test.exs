@@ -44,6 +44,17 @@ defmodule Trav.CollaboratorControllerTest do
     assert trip |> collaborators |> length == num_collaborators+1
   end
 
+  test "only owner can add collaborators", %{conn: conn, trip: trip} do
+    another_user = UserFactory.create(:user)
+
+    response = conn
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
+      |> post(trip_collaborator_path(conn, :create, trip), collaborator_id: another_user.id)
+      |> json_response(401)
+
+    assert response["errors"] != %{}
+  end
+
   test "DELETE a collaborator", %{conn: conn, trip: trip, collaborator: collaborator} do
     num_users = Repo.one(from u in User, select: count(u.id))
     num_collaborators = collaborators(trip) |> length
@@ -67,6 +78,17 @@ defmodule Trav.CollaboratorControllerTest do
     |> response(204)
 
     assert trip |> collaborators |> length == num_collaborators
+  end
+
+  test "only owner can delete collaborators", %{conn: conn, trip: trip, collaborator: collaborator} do
+    another_user = UserFactory.create(:user)
+
+    response = conn
+      |> put_req_header("authorization", another_user |> JWT.encode |> JWT.bearer)
+      |> delete(trip_collaborator_path(conn, :delete, trip, collaborator))
+      |> json_response(401)
+
+    assert response["errors"] != %{}
   end
 
   defp collaborators(trip) do
