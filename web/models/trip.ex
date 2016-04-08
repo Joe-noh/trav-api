@@ -1,7 +1,8 @@
 defmodule Trav.Trip do
   use Trav.Web, :model
 
-  alias Trav.{User, Trip, Plan, Map}
+  alias Trav.{User, Trip, Plan, Map, Collaboration}
+  alias Ecto.Multi
 
   schema "trips" do
     field :title, :string
@@ -9,6 +10,9 @@ defmodule Trav.Trip do
     belongs_to :user, User
     has_one :plan, Plan, on_delete: :delete_all
     has_one :map,  Map,  on_delete: :delete_all
+    many_to_many :collaborators, User, join_through: Collaboration,
+      on_delete: :delete_all,
+      on_replace: :delete
 
     timestamps
   end
@@ -29,7 +33,6 @@ defmodule Trav.Trip do
       |> put_assoc(:plan, %Plan{})
       |> put_assoc(:map,  %Map{})
 
-    Ecto.Multi.new
-    |> Ecto.Multi.insert(:trip, trip)
+    Multi.new |> Multi.insert(:trip, trip)
   end
 end

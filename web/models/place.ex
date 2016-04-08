@@ -5,6 +5,7 @@ defmodule Trav.Place do
     field :name, :string
     field :latitude, :decimal
     field :longitude, :decimal
+
     belongs_to :map, Trav.Map
 
     timestamps

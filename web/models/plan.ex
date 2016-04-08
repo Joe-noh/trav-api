@@ -3,6 +3,7 @@ defmodule Trav.Plan do
 
   schema "plans" do
     field :body, :string, default: ""
+
     belongs_to :trip, Trav.Trip
 
     timestamps
