@@ -1,7 +1,7 @@
 defmodule Trav.CollaboratorControllerTest do
   use Trav.ConnCase, async: true
 
-  alias Trav.{UserFactory, TripFactory}
+  alias Trav.{UserFactory, TripFactory, CollaborationFactory}
   alias Trav.{User, Trip, JWT}
 
   setup %{conn: conn} do
@@ -9,10 +9,8 @@ defmodule Trav.CollaboratorControllerTest do
 
     user = UserFactory.create(:user)
     collaborator = UserFactory.create(:user)
-    {:ok, %{trip: trip}} = TripFactory.create(:trip, user: user)
-      |> Repo.preload(:collaborators)
-      |> Trip.add_collaborator(collaborator)
-      |> Repo.transaction
+    trip = TripFactory.create(:trip, user: user)
+    CollaborationFactory.create(:collaboration, trip: trip, user: collaborator)
 
     conn = conn
       |> put_req_header("accept", "application/json")

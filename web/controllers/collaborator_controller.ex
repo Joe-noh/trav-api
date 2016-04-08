@@ -1,39 +1,36 @@
 defmodule Trav.CollaboratorController do
   use Trav.Web, :controller
 
-  alias Trav.{User, Trip}
+  alias Trav.{User, Collaboration}
 
   plug :scrub_params, "collaborator_id" when action in [:create]
 
-  def create(conn, %{"trip_id" => trip_id, "collaborator_id" => user_id}) do
-    user = Repo.get!(User, user_id)
-    trip = Repo.get!(Trip, trip_id) |> Repo.preload(:collaborators)
+  def create(conn, %{"trip_id" => trip_id, "collaborator_id" => collaborator_id}) do
+    changeset = %Collaboration{trip_id: String.to_integer(trip_id), user_id: collaborator_id}
+      |> Collaboration.changeset
 
-    multi = Trip.add_collaborator(trip, user)
-
-    case Repo.transaction(multi) do
+    case Repo.insert(changeset) do
       {:ok, _} ->
+        collaborator = Repo.get(User, collaborator_id)
+
         conn
         |> put_status(:created)
-        |> render(Trav.UserView, "show.json", user: user)
-      e = {:error, _, _, _} ->
-        IO.inspect e
+        |> render(Trav.UserView, "show.json", user: collaborator)
+      {:error, changeset} ->
         conn
+        |> put_status(:unprocessable_entity)
+        |> render(Trav.ChangesetView, "error.json", changeset: changeset)
     end
   end
 
-  def delete(conn, %{"trip_id" => trip_id, "id" => user_id}) do
-    user = Repo.get!(User, user_id)
-    trip = Repo.get!(Trip, trip_id) |> Repo.preload(:collaborators)
+  def delete(conn, %{"trip_id" => trip_id, "id" => collaborator_id}) do
+    collaboration = Repo.one(
+      from c in Collaboration,
+      where: c.trip_id == ^trip_id and c.user_id == ^collaborator_id
+    )
 
-    multi = Trip.del_collaborator(trip, user)
+    if collaboration, do: Repo.delete!(collaboration)
 
-    case Repo.transaction(multi) do
-      {:ok, _} ->
-        conn |> send_resp(:no_content, "")
-      e = {:error, _, _, _} ->
-        IO.inspect e
-        conn
-    end
+    conn |> send_resp(:no_content, "")
   end
 end

@@ -35,19 +35,4 @@ defmodule Trav.Trip do
 
     Multi.new |> Multi.insert(:trip, trip)
   end
-
-  def add_collaborator(trip, user) do
-    collaborators = Enum.map([user | trip.collaborators], &Ecto.Changeset.change/1)
-    trip = changeset(trip) |> put_assoc(:collaborators, collaborators)
-
-    Multi.new |> Multi.update(:trip, trip)
-  end
-
-  def del_collaborator(trip, user) do
-    collaborators = trip.collaborators
-      |> Enum.filter_map(fn c -> c.id != user.id end, &Ecto.Changeset.change/1)
-    trip = changeset(trip) |> put_assoc(:collaborators, collaborators)
-
-    Multi.new |> Multi.update(:trip, trip)
-  end
 end
