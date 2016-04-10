@@ -41,7 +41,8 @@ defmodule Trav.Mixfile do
       {:oauth, github: "tim/erlang-oauth"},
       {:joken, "~> 1.1"},
 
-      {:ex_machina, "~> 0.6.1", only: :test}
+      {:ex_machina, "~> 0.6.1", only: :test},
+      {:exvcr, "~> 0.7", only: :test}
     ]
   end
 
