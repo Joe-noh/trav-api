@@ -1,5 +1,8 @@
 use Mix.Config
 
+config :trav, Trav,
+  twiter_callback_url: "http://localhost:4000/auth/twitter/callback"
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

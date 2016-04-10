@@ -16,4 +16,11 @@ defmodule Trav.Router do
       resources "/collaborator", CollaboratorController, only: [:create, :delete]
     end
   end
+
+  scope "/auth", Trav do
+    pipe_through :api
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
+  end
 end
