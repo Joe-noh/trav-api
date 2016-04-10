@@ -19,7 +19,7 @@ defmodule Trav.Mixfile do
   def application do
     [mod: {Trav, []},
      applications: [:phoenix, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :ueberauth_twitter]]
+                    :phoenix_ecto, :postgrex]]
   end
 
   # Specifies which paths to compile per environment.
@@ -37,8 +37,6 @@ defmodule Trav.Mixfile do
       {:gettext, "~> 0.9"},
       {:cowboy, "~> 1.0"},
 
-      {:ueberauth_twitter, "~> 0.2"},
-      {:oauth, github: "tim/erlang-oauth"},
       {:joken, "~> 1.1"},
 
       {:ex_machina, "~> 0.6.1", only: :test}
