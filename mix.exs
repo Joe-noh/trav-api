@@ -37,6 +37,8 @@ defmodule Trav.Mixfile do
       {:gettext, "~> 0.9"},
       {:cowboy, "~> 1.0"},
 
+      {:extwitter, "~> 0.7"},
+      {:oauth, github: "tim/erlang-oauth"},
       {:joken, "~> 1.1"},
 
       {:ex_machina, "~> 0.6.1", only: :test}
