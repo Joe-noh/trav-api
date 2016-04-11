@@ -3,8 +3,8 @@ defmodule Trav.AuthController do
 
   def request(conn, %{"provider" => "twitter"}) do
     token = Application.get_env(:trav, :config)
-      |> Keyword.get(:twiter_callback_url)
-      |> ExTwitter.request_token()
+      |> Keyword.get(:twitter_callback_url)
+      |> ExTwitter.request_token
 
     case ExTwitter.authenticate_url(token.oauth_token) do
       {:ok, authenticate_url} ->
