@@ -5,6 +5,9 @@
 # is restricted to this project.
 use Mix.Config
 
+config :trav, :config,
+  twitter_callback_url: "http://localhost:4000/auth/twitter/callback"
+
 # Configures the endpoint
 config :trav, Trav.Endpoint,
   url: [host: "localhost"],
