@@ -41,22 +41,6 @@ defmodule Trav.UserControllerTest do
     assert response["errors"] != %{}
   end
 
-  test "creates and renders resource when data is valid", %{conn: conn} do
-    response = conn
-      |> post(user_path(conn, :create), user: UserFactory.fields_for(:user))
-      |> json_response(201)
-
-    assert response["data"]["id"]
-  end
-
-  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-    response = conn
-      |> post(user_path(conn, :create), user: UserFactory.fields_for(:invalid_user))
-      |> json_response(422)
-
-    assert response["errors"] != %{}
-  end
-
   test "updates and renders chosen resource when data is valid", %{conn: conn, user: user} do
     response = conn
       |> put(user_path(conn, :update, user), user: UserFactory.fields_for(:user))
