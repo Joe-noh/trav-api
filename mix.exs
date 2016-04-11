@@ -17,9 +17,13 @@ defmodule Trav.Mixfile do
   #
   # Type `mix help compile.app` for more information.
   def application do
-    [mod: {Trav, []},
-     applications: [:phoenix, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex]]
+    [
+      mod: {Trav, []},
+      applications: [
+        :phoenix, :cowboy, :logger, :gettext,
+        :phoenix_ecto, :postgrex, :extwitter
+      ]
+    ]
   end
 
   # Specifies which paths to compile per environment.
