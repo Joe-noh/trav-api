@@ -42,7 +42,7 @@ defmodule Trav.Mixfile do
       {:joken, "~> 1.1"},
 
       {:ex_machina, "~> 0.6.1", only: :test},
-      {:exvcr, "~> 0.7", only: :test}
+      {:mock, "~> 0.1", only: :test}
     ]
   end
 
