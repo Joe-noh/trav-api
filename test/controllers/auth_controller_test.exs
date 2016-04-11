@@ -22,7 +22,7 @@ defmodule Trav.AuthControllerTest do
     end
   end
 
-  test "GET callback", %{conn: conn} do
+  test "POST signin", %{conn: conn} do
     token    = "NPcudxy0yU5T3tBzho7iCotZ3cnetKwcTIRlX0iwRl0"
     verifier = "uw7NjWHT6OJ1MpJOXsHfNxoAhPKpgI8BlYDhxEjIBY"
     oauth_token        = "7588892-kagSNqWge8gB1WwE3plnFsJHAZVfxWD7Vb57p0b4"
@@ -33,8 +33,8 @@ defmodule Trav.AuthControllerTest do
       access_token: fn (^verifier, ^token) -> {:ok, map} end
     ] do
       response = conn
-        |> get(auth_path(conn, :callback, "twitter"), oauth_token: token, oauth_verifier: verifier)
-        |> json_response(200)
+        |> post(auth_path(conn, :signin, "twitter"), oauth_token: token, oauth_verifier: verifier)
+        |> json_response(201)
 
       assert response["data"]["oauth_token"] == map.oauth_token
       assert response["data"]["oauth_token_secret"] == map.oauth_token_secret

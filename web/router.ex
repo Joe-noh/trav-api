@@ -20,7 +20,7 @@ defmodule Trav.Router do
   scope "/auth", Trav do
     pipe_through :api
 
-    get "/:provider", AuthController, :request
-    get "/:provider/callback", AuthController, :callback
+    get  "/:provider", AuthController, :request
+    post "/:provider/signin", AuthController, :signin
   end
 end

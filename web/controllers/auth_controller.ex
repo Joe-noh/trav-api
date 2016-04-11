@@ -18,11 +18,11 @@ defmodule Trav.AuthController do
     end
   end
 
-  def callback(conn, %{"provider" => "twitter", "oauth_token" => token, "oauth_verifier" => verifier}) do
+  def signin(conn, %{"provider" => "twitter", "oauth_token" => token, "oauth_verifier" => verifier}) do
     case ExTwitter.access_token(verifier, token) do
       {:ok, access_token} ->
         conn
-        |> put_status(:ok)
+        |> put_status(:created)
         |> json(%{data: access_token})
       {:error, why} ->
         conn
