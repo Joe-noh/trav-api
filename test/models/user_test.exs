@@ -18,9 +18,4 @@ defmodule Trav.UserTest do
     changeset = User.changeset(user, %{name: ""})
     refute changeset.valid?
   end
-
-  test "access_token can't be blank", %{user: user} do
-    changeset = User.changeset(user, %{access_token: ""})
-    refute changeset.valid?
-  end
 end
