@@ -4,7 +4,7 @@ defmodule Trav.User do
   alias Trav.{Trip, Collaboration}
 
   schema "users" do
-    field :name,         :string
+    field :name, :string
 
     has_many :trips, Trip
     many_to_many :collaborated_trips, Trip, join_through: Collaboration

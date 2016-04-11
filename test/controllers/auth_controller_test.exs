@@ -2,7 +2,11 @@ defmodule Trav.AuthControllerTest do
   use Trav.ConnCase, async: true
   import Mock
 
+  alias Trav.{User, JWT}
+
   setup %{conn: conn} do
+    Ecto.Adapters.SQL.Sandbox.checkout(Trav.Repo)
+
     {:ok, %{conn: conn}}
   end
 
@@ -27,17 +31,32 @@ defmodule Trav.AuthControllerTest do
     verifier = "uw7NjWHT6OJ1MpJOXsHfNxoAhPKpgI8BlYDhxEjIBY"
     oauth_token        = "7588892-kagSNqWge8gB1WwE3plnFsJHAZVfxWD7Vb57p0b4"
     oauth_token_secret = "PbKfYqSryyeKDWz4ebtY3o5ogNLG11WJuZBc9fQrQo"
+    user_name = "Joe_noh"
 
-    map = %{oauth_token: oauth_token, oauth_token_secret: oauth_token_secret}
+    map = %{
+      oauth_token: oauth_token,
+      oauth_token_secret: oauth_token_secret,
+      screen_name: user_name
+    }
     with_mock ExTwitter, [
       access_token: fn (^verifier, ^token) -> {:ok, map} end
     ] do
+      assert Repo.get_by(User, name: user_name) == nil
+
       response = conn
         |> post(auth_path(conn, :signin, "twitter"), oauth_token: token, oauth_verifier: verifier)
         |> json_response(201)
 
-      assert response["data"]["oauth_token"] == map.oauth_token
-      assert response["data"]["oauth_token_secret"] == map.oauth_token_secret
+      assert response["data"]["token"]
+
+      user = Repo.get_by(User, name: user_name)
+
+      response = conn
+        |> post(auth_path(conn, :signin, "twitter"), oauth_token: token, oauth_verifier: verifier)
+        |> json_response(201)
+
+      token = response["data"]["token"] |> JWT.decode
+      assert token.claims |> Map.get("user_id") == user.id
     end
   end
 end
