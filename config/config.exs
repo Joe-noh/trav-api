@@ -6,7 +6,7 @@
 use Mix.Config
 
 config :trav, :config,
-  twitter_callback_url: "http://localhost:4000/auth/twitter/callback"
+  twitter_callback_url: "http://localhost:8080/"
 
 # Configures the endpoint
 config :trav, Trav.Endpoint,
