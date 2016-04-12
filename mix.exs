@@ -17,9 +17,13 @@ defmodule Trav.Mixfile do
   #
   # Type `mix help compile.app` for more information.
   def application do
-    [mod: {Trav, []},
-     applications: [:phoenix, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex]]
+    [
+      mod: {Trav, []},
+      applications: [
+        :phoenix, :cowboy, :logger, :gettext,
+        :phoenix_ecto, :postgrex, :extwitter
+      ]
+    ]
   end
 
   # Specifies which paths to compile per environment.
@@ -37,9 +41,12 @@ defmodule Trav.Mixfile do
       {:gettext, "~> 0.9"},
       {:cowboy, "~> 1.0"},
 
+      {:extwitter, "~> 0.7"},
+      {:oauth, github: "tim/erlang-oauth"},
       {:joken, "~> 1.1"},
 
-      {:ex_machina, "~> 0.6.1", only: :test}
+      {:ex_machina, "~> 0.6.1", only: :test},
+      {:mock, "~> 0.1", only: :test}
     ]
   end
 

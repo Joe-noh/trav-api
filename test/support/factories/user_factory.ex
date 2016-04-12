@@ -5,12 +5,11 @@ defmodule Trav.UserFactory do
 
   def factory(:user) do
     %User{
-      name: "Joe_noh",
-      access_token: String.duplicate("a", 100)
+      name: "Joe_noh"
     }
   end
 
   def factory(:invalid_user) do
-    %User{name: "", access_token: ""}
+    %User{name: ""}
   end
 end
