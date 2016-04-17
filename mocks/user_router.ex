@@ -34,7 +34,7 @@ defmodule Trav.Mocks.UserRouter do
     render(conn, Trav.UserView, "show.json", user: user)
   end
 
-  delete "/:id" do
+  delete "/:_id" do
     send_resp(conn, :no_content, "")
   end
 end
