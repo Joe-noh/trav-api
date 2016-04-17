@@ -16,7 +16,7 @@ defmodule Trav.Mocks.UserRouter do
 
   get "/:id" do
     user = %{
-      id: id,
+      id: String.to_integer(id),
       name: "Joe_noh"
     }
 
@@ -24,10 +24,10 @@ defmodule Trav.Mocks.UserRouter do
   end
 
   put "/:id" do
-    params = conn.body_params |> Map.get("user_params")
+    params = conn.body_params |> Map.get("user")
 
     user = %{
-      id: id,
+      id: String.to_integer(id),
       name: params["name"]
     }
 
