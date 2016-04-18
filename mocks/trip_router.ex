@@ -23,10 +23,11 @@ defmodule Trav.Mocks.TripRouter do
   end
 
   get "/:id" do
+    id = String.to_integer(id)
     trip = %{
-      id: 1, title: "静岡旅行", user_id: 1,
-      plan: %{id: 1, body: "こんな予定です", trip_id: 1},
-      map: %{id: 1, trip_id: 1}
+      id: id, title: "静岡旅行", user_id: 1,
+      plan: %{id: 1, body: "こんな予定です", trip_id: id},
+      map: %{id: 1, trip_id: id}
     }
 
     render(conn, Trav.TripView, "show.json", trip: trip)
