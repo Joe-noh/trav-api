@@ -15,12 +15,8 @@ defmodule Trav.Router do
       resources "/places", PlaceController, except: [:new, :edit]
       resources "/collaborator", CollaboratorController, only: [:create, :delete]
     end
-  end
 
-  scope "/auth", Trav do
-    pipe_through :api
-
-    get  "/:provider", AuthController, :request
-    post "/:provider/signin", AuthController, :signin
+    get  "auth/:provider",        AuthController, :request
+    post "auth/:provider/signin", AuthController, :signin
   end
 end
