@@ -1,11 +1,13 @@
 defmodule Trav.PlaceController do
   use Trav.Web, :controller
+  import Ecto.Query
 
   alias Trav.{Place, Trip}
 
   plug Trav.Plugs.CheckAuthPlug
   plug :scrub_params, "place" when action in [:create, :update]
   plug :correct_user
+  plug :correct_assoc when action in [:show, :update, :delete]
 
   def index(conn, _params) do
     places = Repo.all(Place)
@@ -60,10 +62,25 @@ defmodule Trav.PlaceController do
     trip_id = conn.params |> Map.get("trip_id") |> String.to_integer
     trip = Repo.one(from t in Trip, where: t.id == ^trip_id, preload: :user)
 
+    conn = assign(conn, :trip, trip)
+
     if conn.assigns.current_user.id == trip.user.id do
       conn
     else
       conn |> unauthorized
     end
+  end
+
+  defp correct_assoc(conn, _opts) do
+    trip_id = conn.assigns.trip.id
+    place_id = conn.params |> Map.get("id") |> String.to_integer
+
+    place = Trav.Map
+      |> join(:left, [m], p in assoc(m, :places))
+      |> where([m, p], m.trip_id == ^trip_id and p.id == ^place_id)
+      |> select([m, p], p)
+      |> Repo.one!
+
+    assign(conn, :place, place)
   end
 end
