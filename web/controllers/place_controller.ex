@@ -33,13 +33,12 @@ defmodule Trav.PlaceController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    place = Repo.get!(Place, id)
-    render(conn, "show.json", place: place)
+  def show(conn, _params) do
+    render(conn, "show.json", place: conn.assigns.place)
   end
 
-  def update(conn, %{"id" => id, "place" => place_params}) do
-    place = Repo.get!(Place, id)
+  def update(conn, %{"place" => place_params}) do
+    place = conn.assigns.place
     changeset = Place.changeset(place, place_params)
 
     case Repo.update(changeset) do
@@ -52,8 +51,8 @@ defmodule Trav.PlaceController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    Place |> Repo.get!(id) |> Repo.delete!
+  def delete(conn, _params) do
+     conn.assigns.place |> Repo.delete!
 
     send_resp(conn, :no_content, "")
   end
