@@ -11,6 +11,7 @@ defmodule Trav.Mocks.AppRouter do
   forward "/api/trips/:_id/places",        to: Trav.Mocks.PlaceRouter
   forward "/api/trips/:_id/collaborators", to: Trav.Mocks.CollaboratorRouter
   forward "/api/trips",                    to: Trav.Mocks.TripRouter
+  forward "/api/auth",                     to: Trav.Mocks.AuthRouter
 
   match _ do
     send_resp(conn, 404, "Not Found")
