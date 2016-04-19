@@ -1,6 +1,5 @@
 defmodule Trav.PlaceController do
   use Trav.Web, :controller
-  import Ecto.Query
 
   alias Trav.{Place, Trip}
 
