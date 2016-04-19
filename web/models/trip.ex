@@ -23,7 +23,7 @@ defmodule Trav.Trip do
     model
     |> cast(params, @allowed)
     |> validate_required(:title)
-    |> assoc_constraint(:user)
+    |> foreign_key_constraint(:user_id)
   end
 
   def build_multi(user, params) do

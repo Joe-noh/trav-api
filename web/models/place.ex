@@ -20,6 +20,6 @@ defmodule Trav.Place do
     |> validate_required(:latitude)
     |> validate_required(:longitude)
     |> validate_required(:map_id)
-    |> assoc_constraint(:map)
+    |> foreign_key_constraint(:map_id)
   end
 end

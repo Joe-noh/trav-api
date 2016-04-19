@@ -13,6 +13,6 @@ defmodule Trav.Map do
   def changeset(model, params \\ %{}) do
     model
     |> cast(params, @allowed)
-    |> assoc_constraint(:trip)
+    |> foreign_key_constraint(:trip_id)
   end
 end
