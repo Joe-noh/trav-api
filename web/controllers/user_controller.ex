@@ -7,13 +7,12 @@ defmodule Trav.UserController do
   plug :scrub_params, "user" when action in [:update]
   plug :correct_user when action in [:show, :update, :delete]
 
-  def show(conn, %{"id" => id}) do
-    user = Repo.get!(User, id)
-    render(conn, "show.json", user: user)
+  def show(conn, _params) do
+    render(conn, "show.json", user: conn.assigns.current_user)
   end
 
-  def update(conn, %{"id" => id, "user" => user_params}) do
-    user = Repo.get!(User, id)
+  def update(conn, %{"user" => user_params}) do
+    user = conn.assigns.current_user
     changeset = User.changeset(user, user_params)
 
     case Repo.update(changeset) do
@@ -26,8 +25,8 @@ defmodule Trav.UserController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    Repo.get!(User, id) |> Repo.delete!
+  def delete(conn, _params) do
+    conn.assigns.current_user |> Repo.delete!
 
     send_resp(conn, :no_content, "")
   end
@@ -35,9 +34,10 @@ defmodule Trav.UserController do
   defp correct_user(conn, _opts) do
     user_id = conn.params |> Map.get("id") |> String.to_integer
 
-    case conn.assigns.current_user.id do
-      ^user_id -> conn
-      _other   -> unauthorized(conn)
+    if conn.assigns.current_user.id == user_id do
+      conn
+    else
+      conn |> unauthorized
     end
   end
 end

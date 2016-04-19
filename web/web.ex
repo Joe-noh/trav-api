@@ -32,7 +32,7 @@ defmodule Trav.Web do
 
       alias Trav.Repo
       import Ecto
-      import Ecto.Query, only: [from: 1, from: 2]
+      import Ecto.Query
 
       import Trav.ErrorResponseHelpers
       import Trav.Router.Helpers
