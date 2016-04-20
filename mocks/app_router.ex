@@ -1,6 +1,7 @@
 defmodule Trav.Mocks.AppRouter do
   use Plug.Router
 
+  plug CORSPlug, origin: Trav.Config.get(:allow_origin) |> List.wrap
   plug Plug.Parsers, parsers: [:json], json_decoder: Poison
   plug :content_type, "application/json"
   plug :match

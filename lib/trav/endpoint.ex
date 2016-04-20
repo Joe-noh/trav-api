@@ -33,7 +33,7 @@ defmodule Trav.Endpoint do
     key: "_trav_key",
     signing_salt: "nTo7F+U0"
 
-  plug CORSPlug, origin: ["http://localhost:8080"]
+  plug CORSPlug, origin: Trav.Config.get(:allow_origin) |> List.wrap
 
   plug Trav.Router
 end
