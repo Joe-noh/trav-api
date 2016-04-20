@@ -9,7 +9,7 @@ defmodule Trav.Mocks.AuthRouter do
   get "/twitter" do
     url = "https://twitter.com"
 
-    json(conn, %{data: %{url: url}})
+    json(conn, %{url: url})
   end
 
   post "/twitter/signin" do
@@ -19,7 +19,7 @@ defmodule Trav.Mocks.AuthRouter do
     if params_satisfied do
       user = %{id: 1, name: "Joe_noh"} |> IO.inspect
 
-      json(conn, %{data: %{token: JWT.encode(user)}})
+      json(conn, %{token: JWT.encode(user)})
     else
       conn
       |> put_status(:internal_server_error)
