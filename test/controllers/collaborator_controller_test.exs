@@ -30,7 +30,7 @@ defmodule Trav.CollaboratorControllerTest do
       |> post(trip_collaborator_path(conn, :create, trip), collaborator_id: another_user.id)
       |> json_response(201)
 
-    assert response["data"]
+    assert response["user"]
   end
 
   test "POST twice doesn't change num of collaborators", %{conn: conn, trip: trip} do

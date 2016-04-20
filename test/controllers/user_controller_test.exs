@@ -20,7 +20,7 @@ defmodule Trav.UserControllerTest do
       |> get(user_path(conn, :show, user))
       |> json_response(200)
 
-    assert response["data"] == %{"id" => user.id, "name" => user.name}
+    assert response["user"] == %{"id" => user.id, "name" => user.name}
   end
 
   test "a user can see only him/herself", %{conn: conn, user: user} do
@@ -46,7 +46,7 @@ defmodule Trav.UserControllerTest do
       |> put(user_path(conn, :update, user), user: UserFactory.fields_for(:user))
       |> json_response(200)
 
-    assert response["data"]["id"]
+    assert response["user"]["id"]
   end
 
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do

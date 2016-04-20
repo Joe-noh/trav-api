@@ -22,7 +22,7 @@ defmodule Trav.PlanControllerTest do
       |> put(trip_plan_path(conn, :update, trip, plan), plan: PlanFactory.fields_for(:plan))
       |> json_response(200)
 
-    assert response["data"]["id"]
+    assert response["plan"]["id"]
   end
 
   test "PUT an invalid plan", %{conn: conn, trip: trip, plan: plan} do

@@ -22,7 +22,7 @@ defmodule Trav.AuthControllerTest do
         |> get(auth_path(conn, :request, "twitter"))
         |> json_response(200)
 
-      assert response["data"]["url"] == url
+      assert response["url"] == url
     end
   end
 
@@ -47,7 +47,7 @@ defmodule Trav.AuthControllerTest do
         |> post(auth_path(conn, :signin, "twitter"), oauth_token: token, oauth_verifier: verifier)
         |> json_response(201)
 
-      assert response["data"]["token"]
+      assert response["token"]
 
       user = Repo.get_by(User, name: user_name)
 
@@ -55,7 +55,7 @@ defmodule Trav.AuthControllerTest do
         |> post(auth_path(conn, :signin, "twitter"), oauth_token: token, oauth_verifier: verifier)
         |> json_response(201)
 
-      token = response["data"]["token"] |> JWT.decode
+      token = response["token"] |> JWT.decode
       assert token.claims |> Map.get("user_id") == user.id
     end
   end

@@ -26,7 +26,7 @@ defmodule Trav.TripControllerTest do
       |> get(trip_path(conn, :index))
       |> json_response(200)
 
-    assert response["data"] |> length == 1
+    assert response["trips"] |> length == 1
   end
 
   test "GET a trip", %{conn: conn, trip: trip} do
@@ -34,9 +34,9 @@ defmodule Trav.TripControllerTest do
       |> get(trip_path(conn, :show, trip))
       |> json_response(200)
 
-    assert response["data"]["id"]
-    assert response["data"]["title"]
-    assert response["data"]["plan"]
+    assert response["trip"]["id"]
+    assert response["trip"]["title"]
+    assert response["trip"]["plan"]
   end
 
   test "outsider can't see trips", %{conn: conn, trip: trip} do
@@ -57,7 +57,7 @@ defmodule Trav.TripControllerTest do
       |> get(trip_path(conn, :show, trip))
       |> json_response(200)
 
-    assert response["data"]["id"]
+    assert response["trip"]["id"]
   end
 
   test "return 401 if the trip does not exist", %{conn: conn} do
@@ -75,8 +75,8 @@ defmodule Trav.TripControllerTest do
       |> post(trip_path(conn, :create), trip: params)
       |> json_response(201)
 
-    assert response["data"]["id"]
-    assert response["data"]["plan"]
+    assert response["trip"]["id"]
+    assert response["trip"]["plan"]
 
     trip = (from t in Trip, where: t.title == ^title, preload: :plan) |> Repo.one
 
@@ -97,7 +97,7 @@ defmodule Trav.TripControllerTest do
       |> put(trip_path(conn, :update, trip), trip: TripFactory.fields_for(:trip, user_id: user.id))
       |> json_response(200)
 
-    assert response["data"]["id"]
+    assert response["trip"]["id"]
   end
 
   test "PUT invalid trip", %{conn: conn, trip: trip} do
@@ -126,7 +126,7 @@ defmodule Trav.TripControllerTest do
       |> put(trip_path(conn, :update, trip), trip: TripFactory.fields_for(:trip))
       |> json_response(200)
 
-    assert response["data"]["id"]
+    assert response["trip"]["id"]
   end
 
   test "DELETE a trip", %{conn: conn, trip: trip} do
