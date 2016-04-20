@@ -12,7 +12,7 @@ defmodule Trav.AuthController do
       {:ok, authenticate_url} ->
         conn
         |> put_status(:ok)
-        |> json(%{data: %{url: authenticate_url}})
+        |> json(%{url: authenticate_url})
       {:error, why} ->
         conn
         |> put_status(:internal_server_error)
@@ -27,7 +27,7 @@ defmodule Trav.AuthController do
 
         conn
         |> put_status(:created)
-        |> json(%{data: %{token: JWT.encode(user)}})
+        |> json(%{token: JWT.encode(user)})
       {:error, why} ->
         conn
         |> put_status(:internal_server_error)
