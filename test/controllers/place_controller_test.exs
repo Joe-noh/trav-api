@@ -22,7 +22,7 @@ defmodule Trav.PlaceControllerTest do
       |> get(trip_place_path(conn, :index, trip))
       |> json_response(200)
 
-    assert response["data"] |> is_list
+    assert response["places"] |> is_list
   end
 
   test "not granted user can't GET all places", %{conn: conn, trip: trip} do
@@ -40,7 +40,7 @@ defmodule Trav.PlaceControllerTest do
       |> get(trip_place_path(conn, :show, trip, place))
       |> json_response(200)
 
-    assert response["data"] == %{
+    assert response["place"] == %{
       "id" => place.id,
       "map_id" => place.map_id,
       "name" => place.name,
@@ -66,7 +66,7 @@ defmodule Trav.PlaceControllerTest do
       |> post(trip_place_path(conn, :create, trip), place: params)
       |> json_response(201)
 
-    assert response["data"]["id"]
+    assert response["place"]["id"]
     assert Repo.get_by(Place, name: name)
   end
 
@@ -97,7 +97,7 @@ defmodule Trav.PlaceControllerTest do
       |> put(trip_place_path(conn, :update, trip, place), place: params)
       |> json_response(200)
 
-    assert response["data"]["id"]
+    assert response["place"]["id"]
     assert Repo.get_by(Place, name: name)
   end
 
