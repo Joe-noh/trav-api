@@ -36,12 +36,12 @@ defmodule Trav.TripController do
   end
 
   def update(conn, %{"id" => id, "trip" => trip_params}) do
-    trip = Repo.get!(Trip, id)
+    trip = Repo.get!(Trip, id) |> preload_assoc
     changeset = Trip.changeset(trip, trip_params)
 
     case Repo.update(changeset) do
       {:ok, trip} ->
-        render(conn, "show.json", trip: preload_assoc(trip))
+        render(conn, "show.json", trip: trip)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)

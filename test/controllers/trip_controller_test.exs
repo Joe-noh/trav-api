@@ -1,8 +1,8 @@
 defmodule Trav.TripControllerTest do
   use Trav.ConnCase, async: true
 
-  alias Trav.{UserFactory, TripFactory}
-  alias Trav.{User, Trip, JWT}
+  alias Trav.{UserFactory, TripFactory, PlanFactory}
+  alias Trav.{User, Trip, Plan, JWT}
 
   setup %{conn: conn} do
     Ecto.Adapters.SQL.Sandbox.checkout(Trav.Repo)
@@ -106,6 +106,19 @@ defmodule Trav.TripControllerTest do
       |> json_response(422)
 
     assert response["errors"] != %{}
+  end
+
+  test "PUT a trip with a plan", %{conn: conn, trip: trip, user: user} do
+    trip_params = TripFactory.fields_for(:trip, user_id: user.id)
+      |> Map.put(:plan, PlanFactory.fields_for(:plan, id: trip.plan.id, body: "新しい内容"))
+
+    conn
+    |> put(trip_path(conn, :update, trip), trip: trip_params)
+    |> json_response(200)
+
+    updated = Plan |> Repo.get!(trip.plan.id)
+
+    assert updated.body == "新しい内容"
   end
 
   test "outsider can't update trips", %{conn: conn, trip: trip} do
