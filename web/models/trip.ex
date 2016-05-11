@@ -22,6 +22,7 @@ defmodule Trav.Trip do
   def changeset(model, params \\ %{}) do
     model
     |> cast(params, @allowed)
+    |> cast_assoc(:plan)
     |> validate_required(:title)
     |> foreign_key_constraint(:user_id)
   end
