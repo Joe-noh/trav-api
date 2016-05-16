@@ -92,6 +92,20 @@ defmodule Trav.TripControllerTest do
     assert response["errors"] != %{}
   end
 
+  test "POST a trip with a plan", %{conn: conn} do
+    title = "沖縄旅行"
+    body  = "行ってきます"
+    plan_params = %{body: body}
+    trip_params = TripFactory.fields_for(:trip, title: title) |> Map.put(:plan, plan_params)
+
+    response = conn
+      |> post(trip_path(conn, :create), trip: trip_params)
+      |> json_response(201)
+
+    assert response["trip"]["title"] == title
+    assert response["trip"]["plan"]["body"] == body
+  end
+
   test "PUT a trip", %{conn: conn, trip: trip, user: user} do
     response = conn
       |> put(trip_path(conn, :update, trip), trip: TripFactory.fields_for(:trip, user_id: user.id))

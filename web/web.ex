@@ -70,6 +70,15 @@ defmodule Trav.Web do
     end
   end
 
+  def service do
+    quote do
+      import Ecto
+      import Ecto.Changeset
+      alias Trav.Repo
+      alias Ecto.Multi
+    end
+  end
+
   @doc """
   When used, dispatch to the appropriate controller/view/etc.
   """

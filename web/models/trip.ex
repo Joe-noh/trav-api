@@ -1,8 +1,7 @@
 defmodule Trav.Trip do
   use Trav.Web, :model
 
-  alias Trav.{User, Trip, Plan, Map, Collaboration}
-  alias Ecto.Multi
+  alias Trav.{User, Plan, Map, Collaboration}
 
   schema "trips" do
     field :title, :string
@@ -23,17 +22,8 @@ defmodule Trav.Trip do
     model
     |> cast(params, @allowed)
     |> cast_assoc(:plan)
+    |> cast_assoc(:map)
     |> validate_required(:title)
     |> foreign_key_constraint(:user_id)
-  end
-
-  def build_multi(user, params) do
-    trip = user
-      |> build_assoc(:trips)
-      |> Trip.changeset(params)
-      |> put_assoc(:plan, %Plan{})
-      |> put_assoc(:map,  %Map{})
-
-    Multi.new |> Multi.insert(:trip, trip)
   end
 end
