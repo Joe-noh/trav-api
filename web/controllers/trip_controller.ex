@@ -2,6 +2,7 @@ defmodule Trav.TripController do
   use Trav.Web, :controller
 
   alias Trav.Trip
+  alias Trav.TripService
 
   plug Trav.Plugs.CheckAuthPlug
   plug :scrub_params, "trip" when action in [:create, :update]
@@ -13,7 +14,10 @@ defmodule Trav.TripController do
   end
 
   def create(conn, %{"trip" => trip_params}) do
-    multi = Trip.build_multi(conn.assigns.current_user, trip_params)
+    title = get_in(trip_params, ~w[title])
+    body  = get_in(trip_params, ~w[plan body])
+
+    multi = TripService.build(conn.assigns.current_user, title, body)
 
     case Repo.transaction(multi) do
       {:ok, %{trip: trip}} ->
